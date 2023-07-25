@@ -7,16 +7,12 @@ namespace OData.Lite.EDM;
 public class Namespace<TV> : IEnumerable<TV>
 {
     private readonly Func<TV, string>[] keys;
-    private readonly Dictionary<string, TV>[] indices;
+    private readonly Dictionary<string, TV> index;
 
     public Namespace(params Func<TV, string>[] keys)
     {
         this.keys = keys;
-        this.indices = new Dictionary<string, TV>[keys.Length];
-        for (int i = 0; i < keys.Length; i++)
-        {
-            indices[i] = new();
-        }
+        this.index = new Dictionary<string, TV>();
     }
 
     public void Add(TV value)
@@ -26,10 +22,9 @@ public class Namespace<TV> : IEnumerable<TV>
             var key = keys[i](value);
             if (!string.IsNullOrWhiteSpace(key))
             {
-                indices[i].Add(key, value);
+                index.Add(key, value);
             }
         }
-
     }
 
 
@@ -37,7 +32,7 @@ public class Namespace<TV> : IEnumerable<TV>
     {
         for (int i = 0; i < keys.Length; i++)
         {
-            if (indices[i].TryGetValue(key, out var val))
+            if (index.TryGetValue(key, out var val))
             {
                 value = val; return true;
             }
@@ -46,12 +41,12 @@ public class Namespace<TV> : IEnumerable<TV>
         return false;
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => indices[0].Values.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => index.Values.GetEnumerator();
 
-    public IEnumerator<TV> GetEnumerator() => indices[0].Values.GetEnumerator();
+    public IEnumerator<TV> GetEnumerator() => index.Values.GetEnumerator();
 
     public override string ToString()
     {
-        return $"{{ {string.Join(", ", from p in indices[0] select ($"[{p.Key}]= {p.Value}"))}}}";
+        return $"{{ {string.Join(", ", from p in index select ($"[{p.Key}]= {p.Value}"))}}}";
     }
 }

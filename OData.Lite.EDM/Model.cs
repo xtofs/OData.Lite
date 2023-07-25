@@ -9,7 +9,7 @@ using OData.Lite.EDM;
 
 public record class Model(Namespace<Schema> Schemas) : IEnumerable<Schema>
 {
-    public Model() : this(new Namespace<Schema>(s => s.Namespace, s => s.Alias ?? s.Namespace))
+    public Model() : this(new Namespace<Schema>(s => s.Namespace, s => s.Alias!))
     {
     }
 
