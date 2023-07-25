@@ -6,20 +6,23 @@ namespace OData.Lite.EDM;
 
 public class Namespace<TV> : IEnumerable<TV>
 {
-    private readonly Func<TV, string>[] keys;
+    private readonly Func<TV, string> primary;
+    private readonly Func<TV, string?>[] secondaries;
     private readonly Dictionary<string, TV> index;
 
-    public Namespace(params Func<TV, string>[] keys)
+    public Namespace(Func<TV, string> primary, params Func<TV, string?>[] secondaries)
     {
-        this.keys = keys;
+        this.primary = primary;
+        this.secondaries = secondaries;
         this.index = new Dictionary<string, TV>();
     }
 
     public void Add(TV value)
     {
-        for (int i = 0; i < keys.Length; i++)
+        index.Add(primary(value), value);
+        for (int i = 0; i < secondaries.Length; i++)
         {
-            var key = keys[i](value);
+            var key = secondaries[i](value);
             if (!string.IsNullOrWhiteSpace(key))
             {
                 index.Add(key, value);
@@ -30,15 +33,7 @@ public class Namespace<TV> : IEnumerable<TV>
 
     internal bool TryGetValue(string key, [MaybeNullWhen(false)] out TV value)
     {
-        for (int i = 0; i < keys.Length; i++)
-        {
-            if (index.TryGetValue(key, out var val))
-            {
-                value = val; return true;
-            }
-        }
-        value = default;
-        return false;
+        return index.TryGetValue(key, out value);
     }
 
     IEnumerator IEnumerable.GetEnumerator() => index.Values.GetEnumerator();
