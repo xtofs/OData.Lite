@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace OData.Lite.EDM;
 
@@ -48,4 +49,9 @@ public class Namespace<TV> : IEnumerable<TV>
     IEnumerator IEnumerable.GetEnumerator() => indices[0].Values.GetEnumerator();
 
     public IEnumerator<TV> GetEnumerator() => indices[0].Values.GetEnumerator();
+
+    public override string ToString()
+    {
+        return $"{{ {string.Join(", ", from p in indices[0] select ($"[{p.Key}]= {p.Value}"))}}}";
+    }
 }
