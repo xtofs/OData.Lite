@@ -4,9 +4,11 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 
-public record class Schema(String Namespace, string? Alias) : IEnumerable
+public record class Schema(String Namespace, string? Alias) : IEnumerable, INamedItem
 {
     public ReadOnlyStringDictionary<ISchemaElement> Elements { get; } = new ReadOnlyStringDictionary<ISchemaElement>(ns => ns.Name);
+
+    string INamedItem.Name => Namespace;
 
     IEnumerator IEnumerable.GetEnumerator() => Elements.GetEnumerator();
 

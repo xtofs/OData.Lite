@@ -46,41 +46,32 @@ public class ReadOnlyStringDictionary<TV> : IEnumerable<TV>
 }
 
 
-public interface INamedElement
+public interface INamedItem
 {
     string Name { get; }
 }
 
 public abstract record class Container<TItem>() : IEnumerable
-    where TItem : INamedElement
+    where TItem : INamedItem
 {
-    protected ReadOnlyStringDictionary<TItem> Elements { get; } = new ReadOnlyStringDictionary<TItem>(ns => ns.Name);
+    protected ReadOnlyStringDictionary<TItem> Items { get; } = new ReadOnlyStringDictionary<TItem>(ns => ns.Name);
 
-    public void Add(TItem element)
+    public void Add(TItem item)
     {
-        Elements.Add(element);
+        Items.Add(item);
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => Elements.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => Items.GetEnumerator();
 
-    [Obsolete("use .TryFindElement<T>(string name, out T element)")]
-    protected IEnumerable<TItem> FindElement(string name)
+    protected bool TryFindItem(string name, [MaybeNullWhen(false)] out TItem element)
     {
-        if (TryFindElement(name, out var schema))
-        {
-            yield return schema;
-        }
+        return Items.TryGetValue(name, out element);
     }
 
-    protected bool TryFindElement(string name, [MaybeNullWhen(false)] out TItem element)
-    {
-        return Elements.TryGetValue(name, out element);
-    }
-
-    protected bool TryFindElement<T>(string name, [MaybeNullWhen(false)] out T element)
+    protected bool TryFindItem<T>(string name, [MaybeNullWhen(false)] out T element)
         where T : TItem
     {
         element = default;
-        return Elements.TryGetValue(name, out var obj) && obj.Is(out element);
+        return Items.TryGetValue(name, out var obj) && obj.Is(out element);
     }
 }

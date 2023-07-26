@@ -5,26 +5,13 @@ using System.Diagnostics.CodeAnalysis;
 
 // http://docs.oasis-open.org/odata/odata/v4.0/errata03/os/complete/part3-csdl/odata-v4.0-errata03-os-part3-csdl-complete.html#_Toc453752505
 
-public record class Model(ReadOnlyStringDictionary<Schema> Schemas) : IEnumerable<Schema>
+public record class Model : Container<Schema>
 {
-    public Model() : this(new ReadOnlyStringDictionary<Schema>(s => s.Namespace, s => s.Alias!))
-    {
-    }
 
-    public void Add(Schema schema) => this.Schemas.Add(schema);
+    public IEnumerable<Schema> Schemas => base.Items;
 
-    public bool TryFindSchema(string aliasOrNamespace, [MaybeNullWhen(false)] out Schema schema)
-    {
-        return Schemas.TryGetValue(aliasOrNamespace, out schema);
-    }
-
-    public IEnumerable<Schema> FindSchema(string name)
-    {
-        if (Schemas.TryGetValue(name, out var schema))
-        {
-            yield return schema;
-        }
-    }
+    public bool TryFindSchema(string aliasOrNamespace, [MaybeNullWhen(false)] out Schema schema) =>
+        base.TryFindItem(aliasOrNamespace, out schema);
 
     public bool TryResolve(TypeRef typeRef, [MaybeNullWhen(false)] out ISchemaElement element)
     {
@@ -40,23 +27,37 @@ public record class Model(ReadOnlyStringDictionary<Schema> Schemas) : IEnumerabl
     private bool TryFindElement(string fqn, [MaybeNullWhen(false)] out ISchemaElement element)
     {
         var ix = fqn.LastIndexOf('.');
-        var parts = (fqn[..(ix)], fqn[(ix + 1)..]);
-        var res = from schema in this.FindSchema(parts.Item1)
-                  from elem in schema.FindElement(parts.Item2)
-                  select elem;
-        return (element = res.FirstOrDefault()) != null;
+        if (ix >= 0)
+        {
+            var parts = (fqn[..(ix)], fqn[(ix + 1)..]);
+            element = default;
+            return this.TryFindSchema(parts.Item1, out var schema)
+                && schema.TryFindElement(parts.Item2, out element);
+        }
+        else
+        {
+            element = default;
+            return false;
+        }
     }
 
     private bool TryFindElement<T>(string fqn, [MaybeNullWhen(false)] out T element)
         where T : ISchemaElement
     {
-        element = default;
-        return TryFindElement(fqn, out var obj) && obj.Is(out element);
+        var ix = fqn.LastIndexOf('.');
+        if (ix >= 0)
+        {
+            var parts = (fqn[..(ix)], fqn[(ix + 1)..]);
+            element = default;
+            return this.TryFindSchema(parts.Item1, out var schema)
+                && schema.TryFindElement<T>(parts.Item2, out element);
+        }
+        else
+        {
+            element = default;
+            return false;
+        }
     }
-
-    IEnumerator<Schema> IEnumerable<Schema>.GetEnumerator() => Schemas.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => Schemas.GetEnumerator();
 }
 
 

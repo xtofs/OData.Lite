@@ -1,7 +1,7 @@
 namespace OData.Lite.EDM.Model;
 
 
-public record class EnumMember(string Name) : INamedElement
+public record class EnumMember(string Name) : INamedItem
 { }
 
 public sealed record EnumType(string Name) : Container<EnumMember>, ISchemaElement
@@ -10,7 +10,7 @@ public sealed record EnumType(string Name) : Container<EnumMember>, ISchemaEleme
 
     public string Name { get; } = Name;
 
-    public IEnumerable<EnumMember> Members => this.Elements;
+    public IEnumerable<EnumMember> Members => this.Items;
 }
 
 
