@@ -26,20 +26,18 @@ public record class Model(ReadOnlyStringDictionary<Schema> Schemas) : IEnumerabl
         }
     }
 
-    public IEnumerable<ISchemaElement> FindElement(TypeRef typeRef)
-    {
-        if (TryFindElement(typeRef.Name, out var element))
-        {
-            yield return element;
-        }
-    }
-
-    public bool TryFindElement(TypeRef typeRef, [MaybeNullWhen(false)] out ISchemaElement element)
+    public bool TryResolve(TypeRef typeRef, [MaybeNullWhen(false)] out ISchemaElement element)
     {
         return TryFindElement(typeRef.Name, out element);
     }
 
-    public bool TryFindElement(string fqn, [MaybeNullWhen(false)] out ISchemaElement element)
+    public bool TryResolve<T>(TypeRef typeRef, [MaybeNullWhen(false)] out T element)
+            where T : ISchemaElement
+    {
+        return TryFindElement<T>(typeRef.Name, out element);
+    }
+
+    private bool TryFindElement(string fqn, [MaybeNullWhen(false)] out ISchemaElement element)
     {
         var ix = fqn.LastIndexOf('.');
         var parts = (fqn[..(ix)], fqn[(ix + 1)..]);
@@ -48,13 +46,8 @@ public record class Model(ReadOnlyStringDictionary<Schema> Schemas) : IEnumerabl
                   select elem;
         return (element = res.FirstOrDefault()) != null;
     }
-    public bool TryFindElement<T>(TypeRef typeRef, [MaybeNullWhen(false)] out T element)
-        where T : ISchemaElement
-    {
-        return TryFindElement<T>(typeRef.Name, out element);
-    }
 
-    public bool TryFindElement<T>(string fqn, [MaybeNullWhen(false)] out T element)
+    private bool TryFindElement<T>(string fqn, [MaybeNullWhen(false)] out T element)
         where T : ISchemaElement
     {
         element = default;

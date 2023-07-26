@@ -7,7 +7,11 @@ public sealed class CsdlWriter : IDisposable
 {
     public CsdlWriter(TextWriter inner)
     {
-        writer = XmlWriter.Create(inner, XmlWriterSettings);
+        var settings = new XmlWriterSettings
+        {
+            Indent = true,
+        };
+        writer = XmlWriter.Create(inner, settings);
     }
 
     private readonly XmlWriter writer;
@@ -34,6 +38,18 @@ public sealed class CsdlWriter : IDisposable
         writer.WriteStartElement("Schema", EDM);
         writer.WriteAttributeString("Namespace", schema.Namespace);
         writer.WriteAttributeString("Alias", schema.Alias);
+        foreach (var element in schema.Elements)
+        {
+            Write(element);
+        }
+        writer.WriteEndElement();
+    }
+
+    private void Write(ISchemaElement element)
+    {
+        writer.WriteStartElement("Element", EDM);
+        writer.WriteAttributeString("Name", element.Name);
+        writer.WriteAttributeString("Kind", element.Kind.ToString());
         writer.WriteEndElement();
     }
 
@@ -41,11 +57,4 @@ public sealed class CsdlWriter : IDisposable
     {
         ((IDisposable)writer).Dispose();
     }
-
-    static XmlWriterSettings XmlWriterSettings = new XmlWriterSettings
-    {
-        Indent = true,
-    };
 }
-
-// var re

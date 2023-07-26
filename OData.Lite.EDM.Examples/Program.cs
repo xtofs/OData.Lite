@@ -20,15 +20,15 @@ internal class Program
             },
         };
 
-        using (var writer = new CsdlWriter(Console.Out))
-        {
-            writer.Write(model);
-        }
+        // using (var writer = new CsdlWriter(Console.Out))
+        // {
+        //     writer.Write(model);
+        // }
 
         if (model.TryFindSchema("self", out var schema) &&
-                     schema.TryFindElement<ComplexType>("Shoe", out var complex) &&
-                     complex.TryFindProperty("color", out var prop) &&
-                     model.TryFindElement<ComplexType>(prop.Type, out var color))
+            schema.TryFindElement<ComplexType>("Shoe", out var complex) &&
+            complex.TryFindProperty("color", out var prop) &&
+            model.TryResolve<ComplexType>(prop.Type, out var color))
         {
             Console.WriteLine("found: {0}", color);
         }
