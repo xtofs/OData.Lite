@@ -28,7 +28,8 @@ internal class Program
         if (model.TryFindSchema("self", out var schema) &&
             schema.TryFindElement<ComplexType>("Shoe", out var complex) &&
             complex.TryFindProperty("color", out var prop) &&
-            model.TryResolve<ComplexType>(prop.Type, out var color))
+            model.TryResolve<EnumType>(prop.Type, out var color)
+        )
         {
             Console.WriteLine("found: {0}", color);
         }

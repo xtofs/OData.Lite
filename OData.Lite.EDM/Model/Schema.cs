@@ -4,37 +4,19 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 
-public record class Schema(String Namespace, string? Alias) : IEnumerable, INamedItem
+public record class Schema(String Namespace, string? Alias) : Container<ISchemaElement>(e => e.Name)
 {
-    public ReadOnlyStringDictionary<ISchemaElement> Elements { get; } = new ReadOnlyStringDictionary<ISchemaElement>(ns => ns.Name);
-
-    string INamedItem.Name => Namespace;
-
-    IEnumerator IEnumerable.GetEnumerator() => Elements.GetEnumerator();
-
-    public void Add(ISchemaElement element)
-    {
-        Elements.Add(element);
-    }
+    public IEnumerable<ISchemaElement> Elements => base.Values;
 
     public bool TryFindElement(string name, [MaybeNullWhen(false)] out ISchemaElement element)
     {
-        return Elements.TryGetValue(name, out element);
-    }
-
-    public IEnumerable<ISchemaElement> FindElement(string name)
-    {
-        if (TryFindElement(name, out var schema))
-        {
-            yield return schema;
-        }
+        return base.TryFindItem(name, out element);
     }
 
     public bool TryFindElement<T>(string name, [MaybeNullWhen(false)] out T element)
         where T : ISchemaElement
     {
-        element = default;
-        return Elements.TryGetValue(name, out var obj) && obj.Is(out element);
+        return base.TryFindItem<T>(name, out element);
     }
 }
 

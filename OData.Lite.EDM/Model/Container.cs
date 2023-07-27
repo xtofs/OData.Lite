@@ -1,77 +1,54 @@
-using System.Collections;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
-
 namespace OData.Lite.EDM.Model;
 
-public class ReadOnlyStringDictionary<TV> : IEnumerable<TV>
+
+/// <summary>
+/// a base class for all model elements that contain other model elments that can be index by a string
+/// </summary>
+/// <typeparam name="TItem"></typeparam>
+/// <param name="primaryKey"></param>
+/// <param name="secondaryKeys"></param> 
+/// <typeparam name="TItem"></typeparam>
+public abstract record class Container<TItem>(Func<TItem, string> primaryKey, params Func<TItem, string?>[] secondaryKeys) : IEnumerable
 {
-    private readonly Func<TV, string> primary;
-    private readonly Func<TV, string?>[] secondaries;
-    private readonly Dictionary<string, TV> index;
+    readonly Func<TItem, string> primaryKey = primaryKey;
+    readonly Func<TItem, string?>[] secondaryKeys = secondaryKeys;
+    readonly Dictionary<string, TItem> index = new(StringComparer.OrdinalIgnoreCase);
 
-    public ReadOnlyStringDictionary(Func<TV, string> primary, params Func<TV, string?>[] secondaries)
-    {
-        this.primary = primary;
-        this.secondaries = secondaries;
-        this.index = new Dictionary<string, TV>(StringComparer.OrdinalIgnoreCase);
-    }
+    public IEnumerable<TItem> Values => index.Values;
 
-    public void Add(TV value)
+    public void Add(TItem item)
     {
-        index.Add(primary(value), value);
-        for (int i = 0; i < secondaries.Length; i++)
+        index.Add(primaryKey(item), item);
+        foreach (var get in secondaryKeys)
         {
-            var key = secondaries[i](value);
-            if (!string.IsNullOrWhiteSpace(key))
+            var key = get(item);
+            if (key != null)
             {
-                index.Add(key, value);
+                index.Add(key, item);
             }
         }
     }
 
-    internal bool TryGetValue(string key, [MaybeNullWhen(false)] out TV value)
-    {
-        return index.TryGetValue(key, out value);
-    }
-
+    // to enable for collection initializers
     IEnumerator IEnumerable.GetEnumerator() => index.Values.GetEnumerator();
-
-    public IEnumerator<TV> GetEnumerator() => index.Values.GetEnumerator();
-
-    public override string ToString()
-    {
-        return $"{{ {string.Join(", ", from p in index select ($"[{p.Key}]= {p.Value}"))}}}";
-    }
-}
-
-
-public interface INamedItem
-{
-    string Name { get; }
-}
-
-public abstract record class Container<TItem>() : IEnumerable
-    where TItem : INamedItem
-{
-    protected ReadOnlyStringDictionary<TItem> Items { get; } = new ReadOnlyStringDictionary<TItem>(ns => ns.Name);
-
-    public void Add(TItem item)
-    {
-        Items.Add(item);
-    }
-
-    IEnumerator IEnumerable.GetEnumerator() => Items.GetEnumerator();
 
     protected bool TryFindItem(string name, [MaybeNullWhen(false)] out TItem element)
     {
-        return Items.TryGetValue(name, out element);
+        // Console.WriteLine("find {0} in container {1} with keys {2}",
+        // name,
+        //     this.GetType().Name,
+        // $"{{{string.Join(", ", index.Keys)}}}");
+
+        var res = index.TryGetValue(name, out element);
+        // Console.WriteLine("{0}found: {1}", res ? "" : "not ", element);
+        return res;
     }
 
     protected bool TryFindItem<T>(string name, [MaybeNullWhen(false)] out T element)
         where T : TItem
     {
         element = default;
-        return Items.TryGetValue(name, out var obj) && obj.Is(out element);
+        return TryFindItem(name, out var elem) && elem.Is(out element);
     }
+
 }
