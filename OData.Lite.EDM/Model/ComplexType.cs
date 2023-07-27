@@ -1,10 +1,18 @@
-namespace OData.Lite.EDM.Model;
+namespace OData.Lite.EDM;
 
 public sealed record class TypeRef(string Name) { }
 
-public record class Property(string Name, TypeRef Type)
-{ }
-
+public sealed record class Property(string Name, TypeRef Type)
+{
+#pragma warning disable IDE0051
+    private bool PrintMembers(StringBuilder builder)
+    {
+        builder.AppendFormat("Name = {0}, ", Name);
+        builder.AppendFormat("Type = {0}", Type.Name);
+        return true;
+    }
+#pragma warning restore IDE0051
+}
 
 public sealed record ComplexType(string Name) : Container<Property>(p => p.Name), ISchemaElement
 {
@@ -17,4 +25,12 @@ public sealed record ComplexType(string Name) : Container<Property>(p => p.Name)
         return base.TryFindItem(name, out property);
     }
 
+    protected override bool PrintMembers(StringBuilder builder)
+    {
+        builder.AppendFormat("Name = {0}, ", Name);
+        builder.AppendFormat("Properties = [ ");
+        builder.AppendJoin(", ", Properties);
+        builder.AppendFormat("]");
+        return true;
+    }
 }

@@ -2,43 +2,50 @@
 using System.Reflection.Metadata;
 using System.Xml.Linq;
 using OData.Lite.EDM;
-using OData.Lite.EDM.Model;
 
 internal class Program
 {
-    private static void Main(string[] args)
+    private static void Main()
     {
-        var model = new Model{
-            new Schema("example.com", "self"){
-                new EnumType("Color") {
-                    new EnumMember("Red"),
-                    new EnumMember("Green"),
-                },
-                new ComplexType("Shoe") {
-                    new Property("color", new TypeRef("self.Color"))
-                }
-            },
-        };
+        var reader = new CsdlReader();
+        if (reader.TryRead(File.OpenText("example.csdl.xml"), out var model))
+        {
+            System.Console.WriteLine(model); ;
+        }
+
+        // var model = new Model{
+        //     new Schema("example.com", "self"){
+        //         new EnumType("Color") {
+        //             new EnumMember("Red"),
+        //             new EnumMember("Green"),
+        //         },
+        //         new ComplexType("Shoe") {
+        //             new Property("size", new TypeRef("Edm.Float")),
+        //             new Property("color", new TypeRef("self.Color"))
+        //         }
+        //     },
+        // };
 
         // using (var writer = new CsdlWriter(Console.Out))
         // {
         //     writer.Write(model);
         // }
 
-        if (model.TryFindSchema("self", out var schema) &&
-            schema.TryFindElement<ComplexType>("Shoe", out var complex) &&
-            complex.TryFindProperty("color", out var prop) &&
-            model.TryResolve<EnumType>(prop.Type, out var color)
-        )
-        {
-            Console.WriteLine("found: {0}", color);
-        }
-        else
-        {
-            Console.WriteLine("not found");
-        }
+        // if (model.TryFindSchema("self", out var schema) &&
+        //     schema.TryFindElement<ComplexType>("Shoe", out var complex) &&
+        //     complex.TryFindProperty("color", out var prop) &&
+        //     model.TryResolve<EnumType>(prop.Type, out var color)
+        // )
+        // {
+        //     Console.WriteLine("found: {0}", color);
+        // }
+        // else
+        // {
+        //     Console.WriteLine("not found");
+        // }
 
         // Console.WriteLine(model);
+
         // Console.WriteLine(model.GetSchema("self"));
         // Console.WriteLine(model.GetSchema("example.com"));
 
@@ -48,7 +55,4 @@ internal class Program
         //           from color in model.FindType(prop.Type)
         //           select color;
     }
-
 }
-
-// var re

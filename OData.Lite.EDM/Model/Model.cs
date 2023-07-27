@@ -1,4 +1,4 @@
-﻿namespace OData.Lite.EDM.Model;
+﻿namespace OData.Lite.EDM;
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
@@ -7,9 +7,9 @@ using System.Diagnostics.CodeAnalysis;
 
 
 
-public sealed record class Model() : Container<Schema>(s => s.Namespace, s => s.Alias)
+public sealed record class Model() : MultiKeyContainer<Schema>(s => s.Namespace, s => s.Alias)
 {
-    public IEnumerable<Schema> Schemas => base.Values;
+    public IEnumerable<Schema> Schemas => base.Items;
 
     public bool TryFindSchema(string aliasOrNamespace, [MaybeNullWhen(false)] out Schema schema) =>
         base.TryFindItem(aliasOrNamespace, out schema);
@@ -43,23 +43,11 @@ public sealed record class Model() : Container<Schema>(s => s.Namespace, s => s.
         }
     }
 
-    // private bool TryFindElement<T>(string fqn, [MaybeNullWhen(false)] out T element)
-    //     where T : ISchemaElement
-    // {
-    //     var ix = fqn.LastIndexOf('.');
-    //     if (ix >= 0)
-    //     {
-    //         var parts = (fqn[..(ix)], fqn[(ix + 1)..]);
-    //         element = default;
-    //         return this.TryFindSchema(parts.Item1, out var schema)
-    //             && schema.TryFindElement<T>(parts.Item2, out element);
-    //     }
-    //     else
-    //     {
-    //         element = default;
-    //         return false;
-    //     }
-    // }
+    protected override bool PrintMembers(StringBuilder builder)
+    {
+        builder.AppendFormat("Schemas = [ {0} ]", string.Join(", ", Schemas));
+        return true;
+    }
 }
 
 

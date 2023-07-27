@@ -1,4 +1,4 @@
-namespace OData.Lite.EDM.Model;
+namespace OData.Lite.EDM;
 
 
 public record class EnumMember(string Name)

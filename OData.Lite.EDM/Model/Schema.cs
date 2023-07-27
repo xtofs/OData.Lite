@@ -1,4 +1,4 @@
-namespace OData.Lite.EDM.Model;
+namespace OData.Lite.EDM;
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
@@ -17,6 +17,14 @@ public record class Schema(String Namespace, string? Alias) : Container<ISchemaE
         where T : ISchemaElement
     {
         return base.TryFindItem<T>(name, out element);
+    }
+
+    protected override bool PrintMembers(StringBuilder builder)
+    {
+        builder.AppendFormat("Elements = [ ");
+        builder.AppendJoin(", ", Elements);
+        builder.AppendFormat("]");
+        return true;
     }
 }
 
