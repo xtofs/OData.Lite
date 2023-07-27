@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\OData.Lite.EDM\OData.Lite.EDM.csproj" />
+    <ProjectReference Include="..\OData.Lite\OData.Lite.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
