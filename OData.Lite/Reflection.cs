@@ -1,4 +1,4 @@
-namespace OData.Lite.EDM;
+namespace OData.Lite;
 
 using System.Diagnostics.CodeAnalysis;
 

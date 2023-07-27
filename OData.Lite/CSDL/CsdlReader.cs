@@ -1,8 +1,7 @@
-namespace OData.Lite.EDM;
+namespace OData.Lite.CSDL.XML;
 
-using System.Xml;
 using System.Xml.Serialization;
-using OData.Lite.CSDL.XML;
+using OData.Lite;
 
 public sealed class CsdlReader
 {
@@ -10,12 +9,12 @@ public sealed class CsdlReader
     {
     }
 
-    public bool TryRead(TextReader reader, [MaybeNullWhen(false)] out Model model)
+    public static bool TryRead(TextReader reader, [MaybeNullWhen(false)] out Model model)
     {
-        var serializer = new XmlSerializer(typeof(Edmx));
+        var serializer = new XmlSerializer(typeof(Model));
 
         var obj = serializer.Deserialize(reader);
-        if (obj != null && obj is Edmx edmx)
+        if (obj != null && obj is Model edmx)
         {
             System.Console.WriteLine(edmx);
 

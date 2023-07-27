@@ -1,4 +1,4 @@
-namespace OData.Lite.EDM;
+namespace OData.Lite;
 
 
 /// <summary>

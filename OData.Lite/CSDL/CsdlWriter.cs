@@ -1,4 +1,4 @@
-namespace OData.Lite.EDM;
+namespace OData.Lite;
 
 using System.Xml;
 
@@ -28,7 +28,7 @@ public sealed class CsdlWriter : IDisposable
 
             {
                 writer.WriteStartElement("DataServices", NS.EDMX);
-                foreach (var schema in model.Schemas)
+                foreach (var schema in model.DataServices.Schemas)
                 {
                     Write(schema);
                 }
@@ -84,7 +84,8 @@ public sealed class CsdlWriter : IDisposable
         writer.WriteEndElement();
     }
 
-    private void Write(EnumMember member)
+    private void Write(
+        Member member)
     {
         writer.WriteStartElement("Member", NS.EDM);
         writer.WriteAttributeString("Name", member.Name);
@@ -95,7 +96,8 @@ public sealed class CsdlWriter : IDisposable
     {
         writer.WriteStartElement("Property", NS.EDM);
         writer.WriteAttributeString("Name", property.Name);
-        writer.WriteAttributeString("Type", property.Type.Name);
+        // TODO replace with a struct
+        writer.WriteAttributeString("Type", property.Type);
         writer.WriteEndElement();
     }
 

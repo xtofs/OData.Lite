@@ -1,4 +1,4 @@
-namespace OData.Lite.EDM;
+namespace OData.Lite;
 
 /// <summary>
 /// a base class for model elements that contain other model elements that can be index by one or more keys

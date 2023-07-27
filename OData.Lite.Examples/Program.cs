@@ -1,14 +1,15 @@
 ﻿
 using System.Reflection.Metadata;
 using System.Xml.Linq;
-using OData.Lite.EDM;
+using OData.Lite;
+using OData.Lite.CSDL.XML;
 
 internal class Program
 {
     private static void Main()
     {
-        var reader = new CsdlReader();
-        if (reader.TryRead(File.OpenText("example.csdl.xml"), out var model))
+        using var text = File.OpenText("example.csdl.xml");
+        if (CsdlReader.TryRead(text, out var model))
         {
             System.Console.WriteLine(model); ;
         }

@@ -7,8 +7,8 @@
     <edmx:DataServices>
         <Schema Namespace="example.com" Alias="self" xmlns="http://docs.oasis-open.org/odata/ns/edm">
             <EnumType Name="Color">
-                <Member Name="Red" />
-                <Member Name="Green" />
+                <Member Name="red" />
+                <Member Name="green" />
             </EnumType>
             <ComplexType Name="Shoe">
                 <Property Name="color" Type="self.Color" />

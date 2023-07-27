@@ -1,9 +1,9 @@
-namespace OData.Lite.CSDL.XML;
+namespace OData.Lite;
 
 using System.Xml.Serialization;
-using OData.Lite.EDM;
 
-// [XmlInclude(typeof(EnumType)), XmlInclude(typeof(ComplexType))]
+
+[XmlInclude(typeof(EnumType)), XmlInclude(typeof(ComplexType))]
 public abstract class SchemaElement
 {
     [XmlAttribute(AttributeName = "Name")]
@@ -22,7 +22,6 @@ public class Member
     }
 }
 
-// [XmlRoot(ElementName = "EnumType")]
 public class EnumType : SchemaElement
 {
 
@@ -100,7 +99,7 @@ public class DataServices
 }
 
 [XmlRoot(ElementName = "Edmx", Namespace = NS.EDMX)]
-public class Edmx
+public record class Model
 {
     [XmlElement(ElementName = "DataServices")]
     public required DataServices DataServices { get; set; }
@@ -111,9 +110,5 @@ public class Edmx
     [XmlAttribute(AttributeName = "SchemaLocation", Namespace = NS.XSI)]
     public string SchemaLocation { get; set; } = $"{NS.EDMX} {NS.EDMXLocation} {NS.EDM} {NS.EDMLocation}";
 
-    public override string ToString()
-    {
-        return $"{{Edmx Version={Version} DataServices={DataServices}}}";
-    }
 }
 

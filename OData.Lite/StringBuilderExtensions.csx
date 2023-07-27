@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Text;
 
-namespace OData.Lite.EDM;
+namespace OData.Lite;
 
 interface IPrintable<T>
 {
