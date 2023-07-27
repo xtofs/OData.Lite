@@ -18,6 +18,8 @@ public sealed class CsdlReader
         if (obj != null && obj is Edmx edmx)
         {
             System.Console.WriteLine(edmx);
+
+            serializer.Serialize(Console.Out, edmx);
         }
         // reader.Read();
         // if (reader.NodeType == XmlNodeType.XmlDeclaration)

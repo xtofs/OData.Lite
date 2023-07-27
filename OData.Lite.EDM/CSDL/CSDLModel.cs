@@ -1,10 +1,9 @@
 namespace OData.Lite.CSDL.XML;
 
-
 using System.Xml.Serialization;
 using OData.Lite.EDM;
 
-[XmlInclude(typeof(EnumType)), XmlInclude(typeof(ComplexType))]
+// [XmlInclude(typeof(EnumType)), XmlInclude(typeof(ComplexType))]
 public abstract class SchemaElement
 {
     [XmlAttribute(AttributeName = "Name")]
@@ -71,19 +70,11 @@ public class ComplexType : SchemaElement
 
 public class Schema
 {
-
-    // [XmlElement(ElementName = "EnumType")]
-    // public EnumType EnumType { get; set; }
-
-    // [XmlElement(ElementName = "ComplexType")]
-    // public ComplexType ComplexType { get; set; }
-
-    [XmlAttribute(AttributeName = "Namespace", Namespace = NS.EDM)]
-    public required string Namespace { get; set; }
-
     [XmlAttribute(AttributeName = "Alias", Namespace = NS.EDM)]
     public required string? Alias { get; set; }
 
+    [XmlAttribute(AttributeName = "Namespace", Namespace = NS.EDM)]
+    public required string Namespace { get; set; }
 
     [XmlElement(ElementName = "EnumType", Type = typeof(EnumType), Namespace = NS.EDM)]
     [XmlElement(ElementName = "ComplexType", Type = typeof(ComplexType), Namespace = NS.EDM)]
@@ -116,6 +107,9 @@ public class Edmx
 
     [XmlAttribute(AttributeName = "Version")]
     public required string Version { get; set; }
+
+    [XmlAttribute(AttributeName = "SchemaLocation", Namespace = NS.XSI)]
+    public string SchemaLocation { get; set; } = $"{NS.EDMX} {NS.EDMXLocation} {NS.EDM} {NS.EDMLocation}";
 
     public override string ToString()
     {
