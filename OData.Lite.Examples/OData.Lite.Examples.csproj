@@ -17,4 +17,10 @@
         <ProjectReference Include="..\OData.Lite\OData.Lite.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="example.csdl.xml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
