@@ -117,117 +117,118 @@ public record class ComplexType : SchemaElement
     [XmlAttribute(AttributeName = "Name")]
     public override required string Name { get; set; }
 }
-namespace OData.Lite;
 
-using System.Xml.Serialization;
+// namespace OData.Lite;
 
-
-[XmlInclude(typeof(EnumType)), XmlInclude(typeof(ComplexType))]
-public abstract class SchemaElement
-{
-    [XmlAttribute(AttributeName = "Name")]
-    public abstract string Name { get; set; }
-}
+// using System.Xml.Serialization;
 
 
-public class Member
-{
-    [XmlAttribute(AttributeName = "Name")]
-    public required string Name { get; set; }
-
-    public override string ToString()
-    {
-        return $"{{Member Name={Name}}}";
-    }
-}
-
-public class EnumType : SchemaElement
-{
-
-    [XmlElement(ElementName = "Member", Namespace = NS.EDM)]
-    public required List<Member> Members { get; set; }
+// [XmlInclude(typeof(EnumType)), XmlInclude(typeof(ComplexType))]
+// public abstract class SchemaElement
+// {
+//     [XmlAttribute(AttributeName = "Name")]
+//     public abstract string Name { get; set; }
+// }
 
 
-    [XmlAttribute(AttributeName = "Name")]
-    public override required string Name { get; set; }
+// public class Member
+// {
+//     [XmlAttribute(AttributeName = "Name")]
+//     public required string Name { get; set; }
 
-    public override string ToString()
-    {
-        return $"{{Schema Name={Name}  Members=[{string.Join(", ", Members)}]}}";
-    }
-}
+//     public override string ToString()
+//     {
+//         return $"{{Member Name={Name}}}";
+//     }
+// }
 
-public class Property
-{
-    [XmlAttribute(AttributeName = "Name")]
-    public required string Name { get; set; }
+// public class EnumType : SchemaElement
+// {
 
-    [XmlAttribute(AttributeName = "Type")]
-    public required string Type { get; set; }
+//     [XmlElement(ElementName = "Member", Namespace = NS.EDM)]
+//     public required List<Member> Members { get; set; }
 
-    public override string ToString()
-    {
-        return $"{{Property Name={Name} Type={Type}}}";
-    }
-}
 
-public class ComplexType : SchemaElement
-{
+//     [XmlAttribute(AttributeName = "Name")]
+//     public override required string Name { get; set; }
 
-    [XmlElement(ElementName = "Property")]
-    public required List<Property> Properties { get; set; }
+//     public override string ToString()
+//     {
+//         return $"{{Schema Name={Name}  Members=[{string.Join(", ", Members)}]}}";
+//     }
+// }
 
-    [XmlAttribute(AttributeName = "Name")]
-    public override required string Name { get; set; }
+// public class Property
+// {
+//     [XmlAttribute(AttributeName = "Name")]
+//     public required string Name { get; set; }
 
-    public override string ToString()
-    {
-        return $"{{ComplexType Name={Name} Properties=[{string.Join(", ", Properties)}]}}";
-    }
-}
+//     [XmlAttribute(AttributeName = "Type")]
+//     public required string Type { get; set; }
 
-public class Schema
-{
-    [XmlAttribute(AttributeName = "Alias", Namespace = NS.EDM)]
-    public required string? Alias { get; set; }
+//     public override string ToString()
+//     {
+//         return $"{{Property Name={Name} Type={Type}}}";
+//     }
+// }
 
-    [XmlAttribute(AttributeName = "Namespace", Namespace = NS.EDM)]
-    public required string Namespace { get; set; }
+// public class ComplexType : SchemaElement
+// {
 
-    [XmlElement(ElementName = "EnumType", Type = typeof(EnumType), Namespace = NS.EDM)]
-    [XmlElement(ElementName = "ComplexType", Type = typeof(ComplexType), Namespace = NS.EDM)]
-    public required List<SchemaElement> Elements { get; set; }
+//     [XmlElement(ElementName = "Property")]
+//     public required List<Property> Properties { get; set; }
 
-    public override string ToString()
-    {
-        return $"{{Schema Alias={Alias} Namespace={Namespace} Elements=[{string.Join(", ", Elements)}]}}";
-    }
-}
+//     [XmlAttribute(AttributeName = "Name")]
+//     public override required string Name { get; set; }
 
-// [XmlElement(ElementName = "DataServices", Namespace = NS.EDMX)]
-public class DataServices
-{
+//     public override string ToString()
+//     {
+//         return $"{{ComplexType Name={Name} Properties=[{string.Join(", ", Properties)}]}}";
+//     }
+// }
 
-    [XmlElement(ElementName = "Schema", Namespace = NS.EDM)]
-    public required List<Schema> Schemas { get; set; }
+// public class Schema
+// {
+//     [XmlAttribute(AttributeName = "Alias", Namespace = NS.EDM)]
+//     public required string? Alias { get; set; }
 
-    public override string ToString()
-    {
-        return $"{{DataServices Schema=[{string.Join(", ", Schemas)}]}}";
-    }
-}
+//     [XmlAttribute(AttributeName = "Namespace", Namespace = NS.EDM)]
+//     public required string Namespace { get; set; }
 
-[XmlRoot(ElementName = "Edmx", Namespace = NS.EDMX)]
-public record class Model
-{
-    [XmlElement(ElementName = "DataServices")]
-    public required DataServices DataServices { get; set; }
+//     [XmlElement(ElementName = "EnumType", Type = typeof(EnumType), Namespace = NS.EDM)]
+//     [XmlElement(ElementName = "ComplexType", Type = typeof(ComplexType), Namespace = NS.EDM)]
+//     public required List<SchemaElement> Elements { get; set; }
 
-    [XmlAttribute(AttributeName = "Version")]
-    public required string Version { get; set; }
+//     public override string ToString()
+//     {
+//         return $"{{Schema Alias={Alias} Namespace={Namespace} Elements=[{string.Join(", ", Elements)}]}}";
+//     }
+// }
 
-    [XmlAttribute(AttributeName = "SchemaLocation", Namespace = NS.XSI)]
-    public string SchemaLocation { get; set; } = $"{NS.EDMX} {NS.EDMXLocation} {NS.EDM} {NS.EDMLocation}";
+// // [XmlElement(ElementName = "DataServices", Namespace = NS.EDMX)]
+// public class DataServices
+// {
 
-}
+//     [XmlElement(ElementName = "Schema", Namespace = NS.EDM)]
+//     public required List<Schema> Schemas { get; set; }
+
+//     public override string ToString()
+//     {
+//         return $"{{DataServices Schema=[{string.Join(", ", Schemas)}]}}";
+//     }
+// }
+
+// [XmlRoot(ElementName = "Edmx", Namespace = NS.EDMX)]
+// public record class Model
+// {
+//     [XmlElement(ElementName = "DataServices")]
+//     public required DataServices DataServices { get; set; }
+
+//     [XmlAttribute(AttributeName = "Version")]
+//     public required string Version { get; set; }
+
+//     [XmlAttribute(AttributeName = "SchemaLocation", Namespace = NS.XSI)]
+//     public string SchemaLocation { get; set; } = $"{NS.EDMX} {NS.EDMXLocation} {NS.EDM} {NS.EDMLocation}";
+
+// }
 
