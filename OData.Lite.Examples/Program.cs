@@ -6,23 +6,22 @@ internal class Program
 
     private static void Main()
     {
-        var loggerFactory = LoggerFactory.Create(builder =>
-        builder.AddSimpleConsole(options =>
-        {
-            options.IncludeScopes = true;
-            options.SingleLine = true;
-            options.TimestampFormat = "HH:mm:ss ";
-        }));
-
-        Log.Logger = loggerFactory.CreateLogger<Program>();
-
+        Log.AddConsole();
 
         using var file = File.OpenText("example.csdl.xml");
         if (CsdlReader.TryRead(file, out var model))
         {
             Console.WriteLine(model); ;
+
             Console.WriteLine();
-            // CsdlWriter.Write(Console.Out, model);
+            Console.WriteLine(new string('=', 60));
+            Console.WriteLine();
+
+            CsdlWriter.Write(Console.Out, model);
+
+            Console.WriteLine();
+            Console.WriteLine(new string('=', 60));
+            Console.WriteLine();
 
             if (model.DataServices.Schemas.TryFind("self", out var schema) &&
                 schema.Elements.TryFind<OData.Lite.ComplexType>("Shoe", out var complex) &&
