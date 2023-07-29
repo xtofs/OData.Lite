@@ -1,9 +1,7 @@
 namespace OData.Lite;
 
 using System.Xml;
-using System.Xml.Schema;
 using System.Xml.Serialization;
-using OData.Lite;
 
 
 [XmlRoot(ElementName = "Edmx", Namespace = NS.EDMX)]
@@ -18,7 +16,8 @@ public record class Model
     [XmlAttribute(AttributeName = "SchemaLocation", Namespace = NS.XSI)]
     public string SchemaLocation { get; set; } = $"{NS.EDMX} {NS.EDMXLocation} {NS.EDM} {NS.EDMLocation}";
 
-    public bool TryResolve<T>(TypeRef type, [MaybeNullWhen(false)] out SchemaElement element)
+    public bool TryResolve<T>(TypeRef type, [MaybeNullWhen(false)] out T element)
+    where T : SchemaElement
     {
         string fqn = type.FQN;
         var ix = fqn.LastIndexOf('.');
@@ -28,7 +27,7 @@ public record class Model
 
             element = default;
             return this.DataServices.Schemas.TryFind(parts.Item1, out var schema)
-                && schema.Elements.TryFind(parts.Item2, out element);
+                && schema.Elements.TryFind<T>(parts.Item2, out element);
         }
         else
         {
@@ -62,7 +61,11 @@ public record class Schema
 
     [XmlElement(ElementName = "EnumType", Type = typeof(EnumType), Namespace = NS.EDM)]
     [XmlElement(ElementName = "ComplexType", Type = typeof(ComplexType), Namespace = NS.EDM)]
+    [XmlElement(ElementName = "EntityType", Type = typeof(EntityType), Namespace = NS.EDM)]
     public required SchemaElementCollection Elements { get; set; }
+
+    [XmlElement(ElementName = "EntityContainer")]
+    public required EntityContainer EntityContainer { get; set; }
 }
 
 public record class DataServices
@@ -128,6 +131,31 @@ public record class ComplexType : SchemaElement
     public override required string Name { get; set; }
 }
 
+public record class EntityType : SchemaElement
+{
+    [XmlAttribute(AttributeName = "Name")]
+    public override required string Name { get; set; }
+
+    [XmlElement(ElementName = "Key")]
+    public required Key Key { get; set; }
+
+    [XmlElement(ElementName = "Property")]
+    public required PropertyCollection Properties { get; set; }
+}
+
+public class Key
+{
+    [XmlElement(ElementName = "PropertyRef")]
+    public required List<PropertyRef> PropertyRefs { get; set; }
+}
+
+
+public class PropertyRef
+{
+    [XmlAttribute(AttributeName = "Name")]
+    public required string Name { get; set; }
+}
+
 public class TypeRef
 {
     public TypeRef() { FQN = string.Empty; }
@@ -135,4 +163,53 @@ public class TypeRef
     public TypeRef(string fqn) { FQN = fqn; }
 
     public string FQN { get; private set; }
+}
+
+
+public class EntityContainer
+{
+    [XmlAttribute(AttributeName = "Name")]
+    public required string Name { get; set; }
+
+    [XmlElement(ElementName = "EntitySet", Type = typeof(EntitySet), Namespace = NS.EDM)]
+    [XmlElement(ElementName = "Singleton", Type = typeof(Singleton), Namespace = NS.EDM)]
+    public required ContainerElementCollection Elements { get; set; }
+}
+
+
+[XmlInclude(typeof(EnumType)), XmlInclude(typeof(ComplexType))]
+public abstract record class ContainerElement
+{
+    [XmlAttribute(AttributeName = "Name")]
+    public abstract string Name { get; set; }
+}
+
+public record ContainerElementCollection() : StringIndexedCollection<ContainerElement>(e => e.Name)
+{
+    public bool TryFindElement(string name, [MaybeNullWhen(false)] out ContainerElement element) =>
+           base.TryFind<ContainerElement>(name, out element);
+
+    public bool TryFindElement<TElement>(string name, [MaybeNullWhen(false)] out TElement element)
+        where TElement : ContainerElement =>
+           base.TryFind<TElement>(name, out element);
+}
+public record class EntitySet : ContainerElement
+{
+    [XmlAttribute(AttributeName = "Name")]
+    public override required string Name { get; set; }
+
+    [XmlAttribute(AttributeName = "EntityType")]
+    public required string EntityType { get; set; }
+}
+
+public record class Singleton : ContainerElement
+{
+    [XmlAttribute(AttributeName = "Name")]
+    public override required string Name { get; set; }
+
+    [XmlAttribute(AttributeName = "Type", DataType = "string")]
+    public required string EntityType { get; set; }
+
+    [XmlAttribute(AttributeName = "Nullable", DataType = "boolean")]
+    public required bool Nullable { get; set; }
 }

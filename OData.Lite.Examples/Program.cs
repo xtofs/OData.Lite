@@ -8,20 +8,18 @@ internal class Program
     {
         Log.AddConsole();
 
-        using var file = File.OpenText("example.csdl.xml");
+        // using var file = File.OpenText("example.csdl.xml");
+        using var file = File.OpenText("example89.csdl.xml");
+
         if (CsdlReader.TryRead(file, out var model))
         {
             Console.WriteLine(model); ;
 
-            Console.WriteLine();
-            Console.WriteLine(new string('=', 60));
-            Console.WriteLine();
+            Console.WriteLine("\n==========================================================\n");
 
             CsdlWriter.Write(Console.Out, model);
 
-            Console.WriteLine();
-            Console.WriteLine(new string('=', 60));
-            Console.WriteLine();
+            Console.WriteLine("\n==========================================================\n");
 
             if (model.DataServices.Schemas.TryFind("self", out var schema) &&
                 schema.Elements.TryFind<OData.Lite.ComplexType>("Shoe", out var complex) &&
