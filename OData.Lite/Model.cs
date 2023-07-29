@@ -3,6 +3,7 @@ namespace OData.Lite;
 using System.Xml;
 using System.Xml.Serialization;
 
+// https://learn.microsoft.com/en-us/dotnet/standard/serialization/attributes-that-control-xml-serialization
 
 [XmlRoot(ElementName = "Edmx", Namespace = NS.EDMX)]
 public record class Model
@@ -14,7 +15,11 @@ public record class Model
     public required string Version { get; set; }
 
     [XmlAttribute(AttributeName = "SchemaLocation", Namespace = NS.XSI)]
-    public string SchemaLocation { get; set; } = $"{NS.EDMX} {NS.EDMXLocation} {NS.EDM} {NS.EDMLocation}";
+    public string SchemaLocation { get; } = $"{NS.EDMX} {NS.EDMXLocation} {NS.EDM} {NS.EDMLocation}";
+
+    [XmlElement(ElementName = "Reference", Namespace = NS.EDMX)]
+    public required ReferenceCollection Reference { get; set; }
+
 
     public bool TryResolve<T>(TypeRef type, [MaybeNullWhen(false)] out T element)
     where T : SchemaElement
@@ -37,6 +42,11 @@ public record class Model
     }
 }
 
+
+public record ReferenceCollection() : MultiStringIndexedCollection<Reference>(e => e.Uri)
+{
+}
+
 public record SchemaCollection() : MultiStringIndexedCollection<Schema>(e => e.Namespace, e => e.Alias)
 {
 }
@@ -49,6 +59,25 @@ public record SchemaElementCollection() : StringIndexedCollection<SchemaElement>
     public bool TryFindElement<TElement>(string name, [MaybeNullWhen(false)] out TElement element)
         where TElement : SchemaElement =>
            base.TryFind<TElement>(name, out element);
+}
+
+public record class Reference
+{
+    [XmlAttribute(AttributeName = "Uri")]
+    public required string Uri { get; set; }
+
+    [XmlElement(ElementName = "Include", Namespace = NS.EDMX)]
+    public required Include Include { get; set; }
+}
+
+
+public record class Include
+{
+    [XmlAttribute(AttributeName = "Namespace")]
+    public required string? Uri { get; set; }
+
+    [XmlAttribute(AttributeName = "Alias")]
+    public required string? Alias { get; set; }
 }
 
 public record class Schema
@@ -112,7 +141,7 @@ public record class Property
     public required string Name { get; set; }
 
     [XmlAttribute(AttributeName = "Type")]
-    public string TypeFQN { get; set; }
+    public required string TypeFQN { get; set; }
 
     [XmlIgnore]
     public required TypeRef Type
@@ -120,15 +149,55 @@ public record class Property
         get => new TypeRef(TypeFQN);
         set { TypeFQN = value.FQN; }
     }
+
+
+    [XmlAttribute(AttributeName = "Nullable", DataType = "boolean")]
+    public required bool Nullable { get; set; }
+
+    [XmlAttribute(AttributeName = "Scale")]
+    public required string Scale { get; set; }
+
+    [XmlAttribute(AttributeName = "MaxLength")]
+    public required string MaxLength { get; set; }
 }
 
 public record class ComplexType : SchemaElement
 {
-    [XmlElement(ElementName = "Property")]
-    public required PropertyCollection Properties { get; set; }
 
     [XmlAttribute(AttributeName = "Name")]
     public override required string Name { get; set; }
+
+    [XmlElement(ElementName = "Property")]
+    public required PropertyCollection Properties { get; set; }
+
+    [XmlElement(ElementName = "NavigationProperty")]
+    public required NavigationPropertyCollection NavigationProperties { get; set; }
+}
+
+public record NavigationPropertyCollection() : StringIndexedCollection<NavigationProperty>(e => e.Name)
+{
+}
+
+public record class NavigationProperty
+{
+    [XmlAttribute(AttributeName = "Name")]
+    public required string Name { get; set; }
+
+    [XmlAttribute(AttributeName = "Type")]
+    public required string TypeFQN { get; set; }
+
+    [XmlIgnore]
+    public required TypeRef Type
+    {
+        get => new TypeRef(TypeFQN);
+        set { TypeFQN = value.FQN; }
+    }
+
+    [XmlAttribute(AttributeName = "Nullable", DataType = "boolean")]
+    public required bool Nullable { get; set; }
+
+    [XmlAttribute(AttributeName = "Partner")]
+    public required string Partner { get; set; }
 }
 
 public record class EntityType : SchemaElement
@@ -136,11 +205,17 @@ public record class EntityType : SchemaElement
     [XmlAttribute(AttributeName = "Name")]
     public override required string Name { get; set; }
 
+    [XmlAttribute(AttributeName = "HasStream")]
+    public required bool HasStream { get; set; }
+
     [XmlElement(ElementName = "Key")]
     public required Key Key { get; set; }
 
     [XmlElement(ElementName = "Property")]
     public required PropertyCollection Properties { get; set; }
+
+    [XmlElement(ElementName = "NavigationProperty")]
+    public required NavigationPropertyCollection NavigationProperties { get; set; }
 }
 
 public class Key

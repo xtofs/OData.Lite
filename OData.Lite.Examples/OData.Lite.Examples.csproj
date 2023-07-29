@@ -17,6 +17,12 @@
     <ProjectReference Include="..\OData.Lite\OData.Lite.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.XmlSerializer.Generator" Version="1.0.0" />
+    <DotNetCliToolReference Include="Microsoft.XmlSerializer.Generator" Version="1.0.0" />
+ </ItemGroup>
+ 
   <ItemGroup>
     <None Update="example.csdl.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

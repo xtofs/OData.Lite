@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 public abstract record class StringIndexedCollection<TItem>(Func<TItem, string> GetKey) : IEnumerable<TItem>
 {
     readonly Func<TItem, string> primaryKey = GetKey;
+    // TODO: check if KeyedCollection is a better choice since it supposedly preserves order
     readonly Dictionary<string, TItem> index = new(StringComparer.OrdinalIgnoreCase);
 
     public void Add(TItem item)
