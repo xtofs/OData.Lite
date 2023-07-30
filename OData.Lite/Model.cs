@@ -1,5 +1,6 @@
 namespace OData.Lite;
 
+using System.ComponentModel;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -8,9 +9,6 @@ using System.Xml.Serialization;
 [XmlRoot(ElementName = "Edmx", Namespace = NS.EDMX)]
 public record class Model
 {
-    [XmlElement(ElementName = "DataServices")]
-    public required DataServices DataServices { get; set; }
-
     [XmlAttribute(AttributeName = "Version")]
     public required string Version { get; set; }
 
@@ -19,6 +17,10 @@ public record class Model
 
     [XmlElement(ElementName = "Reference", Namespace = NS.EDMX)]
     public required ReferenceCollection Reference { get; set; }
+
+    [XmlElement(ElementName = "DataServices")]
+    public required DataServices DataServices { get; set; }
+
 
 
     public bool TryResolve<T>(TypeRef type, [MaybeNullWhen(false)] out T element)
@@ -146,7 +148,7 @@ public record class Property
     [XmlIgnore]
     public required TypeRef Type
     {
-        get => new TypeRef(TypeFQN);
+        get => new(TypeFQN);
         set { TypeFQN = value.FQN; }
     }
 
@@ -189,23 +191,57 @@ public record class NavigationProperty
     [XmlIgnore]
     public required TypeRef Type
     {
-        get => new TypeRef(TypeFQN);
+        get => new(TypeFQN);
         set { TypeFQN = value.FQN; }
     }
 
     [XmlAttribute(AttributeName = "Nullable", DataType = "boolean")]
+    // https://docs.oasis-open.org/odata/odata-csdl-xml/v4.01/odata-csdl-xml-v4.01.html#sec_NullableNavigationProperty
+    [DefaultValue(true)]
     public required bool Nullable { get; set; }
 
     [XmlAttribute(AttributeName = "Partner")]
     public required string Partner { get; set; }
+
+    // [XmlElement(ElementName = "OnDelete")]
+    // public required OnDelete OnDelete { get; set; }
+
+    // [XmlElement(ElementName = "ReferentialConstraint")]
+    // public required ReferentialConstraint ReferentialConstraint { get; set; }
 }
+
+// //  <OnDelete Action="Cascade" />
+// public record class OnDelete
+// {
+//     [XmlAttribute(AttributeName = "Action")]
+//     public required DeleteAction Action { get; set; }
+// }
+
+// public enum DeleteAction { Cascade, None, SetNull, SetDefault }
+
+// public record class ReferentialConstraint
+// {
+//     [XmlAttribute(AttributeName = "Property")]
+//     public required string Property { get; set; }
+
+//     [XmlAttribute(AttributeName = "ReferencedProperty")]
+//     public required string ReferencedProperty { get; set; }
+
+// }
 
 public record class EntityType : SchemaElement
 {
     [XmlAttribute(AttributeName = "Name")]
     public override required string Name { get; set; }
 
+
+    // // https://docs.oasis-open.org/odata/odata-csdl-xml/v4.01/odata-csdl-xml-v4.01.html#sec_AbstractEntityType
+    // [XmlAttribute(AttributeName = "Abstract")]
+    // [DefaultValue(false)]
+    // public required bool Abstract { get; set; }
+
     [XmlAttribute(AttributeName = "HasStream")]
+    [DefaultValue(false)]
     public required bool HasStream { get; set; }
 
     [XmlElement(ElementName = "Key")]

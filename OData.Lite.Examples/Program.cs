@@ -16,7 +16,7 @@ internal class Program
 
             // Console.WriteLine("\n==========================================================\n");
 
-            CsdlWriter.Write(Console.Out, model);
+            CsdlWriter.Write("output.csdl.xml", model);
 
             // Console.WriteLine("\n==========================================================\n");
 
