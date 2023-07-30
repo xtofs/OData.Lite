@@ -37,15 +37,8 @@ record class UrlSpace(IReadOnlyList<Node> Nodes)
         else
         {
             System.Console.WriteLine("can't resolve type {0} of entitySet {1}", entitySet.EntityType, entitySet);
-            return null;
+            return new Node($"{entitySet.Name}: unkown type {entitySet.EntityType}"); ; ;
         }
-    }
-
-    private static Node FromEntityKey(Model model, EntityType entityType)
-    {
-        var key = entityType.Key;
-        var prop = entityType.Properties.Single(p => p.Name == key.PropertyRefs.ElementAt(0).Name);
-        return new Node($"{{{entityType.Name}.{prop.Name}: {prop.TypeFQN}}}", entityType.NavigationProperties.Select(p => FromProperty(model, p)).ToList());
     }
 
     private static Node FromSingleton(Model model, Singleton singleton)
@@ -57,8 +50,16 @@ record class UrlSpace(IReadOnlyList<Node> Nodes)
         else
         {
             System.Console.WriteLine("can't resolve type {0} of singleton {1}", singleton.EntityType, singleton);
-            return null;
+            return new Node($"{singleton.Name}: unkown type {singleton.EntityType}"); ; ;
         }
+    }
+
+
+    private static Node FromEntityKey(Model model, EntityType entityType)
+    {
+        var key = entityType.Key;
+        var prop = entityType.Properties.Single(p => p.Name == key.PropertyRefs.ElementAt(0).Name);
+        return new Node($"{{{entityType.Name}.{prop.Name}: {prop.TypeFQN}}}", entityType.NavigationProperties.Select(p => FromProperty(model, p)).ToList());
     }
 
     private static Node FromProperty(Model model, NavigationProperty property)
