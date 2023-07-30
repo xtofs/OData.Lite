@@ -2,20 +2,21 @@ namespace OData.Lite;
 
 using System.ComponentModel;
 using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 // https://learn.microsoft.com/en-us/dotnet/standard/serialization/attributes-that-control-xml-serialization
 
-[XmlRoot(ElementName = "Edmx", Namespace = NS.EDMX)]
+[XmlRoot(ElementName = "Edmx", Namespace = XmlNamespaces.EDMX)]
 public record class Model
 {
     [XmlAttribute(AttributeName = "Version")]
     public required string Version { get; set; }
 
-    [XmlAttribute(AttributeName = "SchemaLocation", Namespace = NS.XSI)]
-    public string SchemaLocation { get; } = $"{NS.EDMX} {NS.EDMXLocation} {NS.EDM} {NS.EDMLocation}";
+    [XmlAttribute(AttributeName = "SchemaLocation", Namespace = XmlNamespaces.XSI)]
+    public string SchemaLocation { get; } = $"{XmlNamespaces.EDMX} {XmlNamespaces.EDMXLocation} {XmlNamespaces.EDM} {XmlNamespaces.EDMLocation}";
 
-    [XmlElement(ElementName = "Reference", Namespace = NS.EDMX)]
+    [XmlElement(ElementName = "Reference", Namespace = XmlNamespaces.EDMX)]
     public required ReferenceCollection Reference { get; set; }
 
     [XmlElement(ElementName = "DataServices")]
@@ -23,10 +24,9 @@ public record class Model
 
 
 
-    public bool TryResolve<T>(TypeRef type, [MaybeNullWhen(false)] out T element)
+    public bool TryResolve<T>(string fqn, [MaybeNullWhen(false)] out T element)
     where T : SchemaElement
     {
-        string fqn = type.FQN;
         var ix = fqn.LastIndexOf('.');
         if (ix >= 0)
         {
@@ -68,7 +68,7 @@ public record class Reference
     [XmlAttribute(AttributeName = "Uri")]
     public required string Uri { get; set; }
 
-    [XmlElement(ElementName = "Include", Namespace = NS.EDMX)]
+    [XmlElement(ElementName = "Include", Namespace = XmlNamespaces.EDMX)]
     public required Include Include { get; set; }
 }
 
@@ -84,15 +84,15 @@ public record class Include
 
 public record class Schema
 {
-    [XmlAttribute(AttributeName = "Alias", Namespace = NS.EDM)]
+    [XmlAttribute(AttributeName = "Alias", Namespace = XmlNamespaces.EDM)]
     public required string? Alias { get; set; }
 
-    [XmlAttribute(AttributeName = "Namespace", Namespace = NS.EDM)]
+    [XmlAttribute(AttributeName = "Namespace", Namespace = XmlNamespaces.EDM)]
     public required string Namespace { get; set; }
 
-    [XmlElement(ElementName = "EnumType", Type = typeof(EnumType), Namespace = NS.EDM)]
-    [XmlElement(ElementName = "ComplexType", Type = typeof(ComplexType), Namespace = NS.EDM)]
-    [XmlElement(ElementName = "EntityType", Type = typeof(EntityType), Namespace = NS.EDM)]
+    [XmlElement(ElementName = "EnumType", Type = typeof(EnumType), Namespace = XmlNamespaces.EDM)]
+    [XmlElement(ElementName = "ComplexType", Type = typeof(ComplexType), Namespace = XmlNamespaces.EDM)]
+    [XmlElement(ElementName = "EntityType", Type = typeof(EntityType), Namespace = XmlNamespaces.EDM)]
     public required SchemaElementCollection Elements { get; set; }
 
     [XmlElement(ElementName = "EntityContainer")]
@@ -101,7 +101,7 @@ public record class Schema
 
 public record class DataServices
 {
-    [XmlElement(ElementName = "Schema", Namespace = NS.EDM)]
+    [XmlElement(ElementName = "Schema", Namespace = XmlNamespaces.EDM)]
     public required SchemaCollection Schemas { get; set; }
 }
 
@@ -115,7 +115,7 @@ public abstract record class SchemaElement
 
 public record class EnumType : SchemaElement
 {
-    [XmlElement(ElementName = "Member", Namespace = NS.EDM)]
+    [XmlElement(ElementName = "Member", Namespace = XmlNamespaces.EDM)]
     public required EnumMemberCollection Members { get; set; }
 
     [XmlAttribute(AttributeName = "Name")]
@@ -145,12 +145,12 @@ public record class Property
     [XmlAttribute(AttributeName = "Type")]
     public required string TypeFQN { get; set; }
 
-    [XmlIgnore]
-    public required TypeRef Type
-    {
-        get => new(TypeFQN);
-        set { TypeFQN = value.FQN; }
-    }
+    // [XmlIgnore]
+    // public required TypeRef Type
+    // {
+    //     get => new(TypeFQN);
+    //     set { TypeFQN = value.FQN; }
+    // }
 
 
     [XmlAttribute(AttributeName = "Nullable", DataType = "boolean")]
@@ -188,12 +188,12 @@ public record class NavigationProperty
     [XmlAttribute(AttributeName = "Type")]
     public required string TypeFQN { get; set; }
 
-    [XmlIgnore]
-    public required TypeRef Type
-    {
-        get => new(TypeFQN);
-        set { TypeFQN = value.FQN; }
-    }
+    // [XmlIgnore]
+    // public required TypeRef Type
+    // {
+    //     get => new (TypeFQN);
+    //     set { TypeFQN = value.FQN; }
+    // }
 
     [XmlAttribute(AttributeName = "Nullable", DataType = "boolean")]
     // https://docs.oasis-open.org/odata/odata-csdl-xml/v4.01/odata-csdl-xml-v4.01.html#sec_NullableNavigationProperty
@@ -252,6 +252,11 @@ public record class EntityType : SchemaElement
 
     [XmlElement(ElementName = "NavigationProperty")]
     public required NavigationPropertyCollection NavigationProperties { get; set; }
+
+    public XmlSchema? GetSchema()
+    {
+        return null;
+    }
 }
 
 public class Key
@@ -267,23 +272,13 @@ public class PropertyRef
     public required string Name { get; set; }
 }
 
-public class TypeRef
-{
-    public TypeRef() { FQN = string.Empty; }
-
-    public TypeRef(string fqn) { FQN = fqn; }
-
-    public string FQN { get; private set; }
-}
-
-
 public class EntityContainer
 {
     [XmlAttribute(AttributeName = "Name")]
     public required string Name { get; set; }
 
-    [XmlElement(ElementName = "EntitySet", Type = typeof(EntitySet), Namespace = NS.EDM)]
-    [XmlElement(ElementName = "Singleton", Type = typeof(Singleton), Namespace = NS.EDM)]
+    [XmlElement(ElementName = "EntitySet", Type = typeof(EntitySet), Namespace = XmlNamespaces.EDM)]
+    [XmlElement(ElementName = "Singleton", Type = typeof(Singleton), Namespace = XmlNamespaces.EDM)]
     public required ContainerElementCollection Elements { get; set; }
 }
 
@@ -323,4 +318,14 @@ public record class Singleton : ContainerElement
 
     [XmlAttribute(AttributeName = "Nullable", DataType = "boolean")]
     public required bool Nullable { get; set; }
+}
+
+
+public static class XmlReaderExtensions
+{
+    public static (int, int) Location(this XmlReader reader)
+    {
+        IXmlLineInfo xmlInfo = (IXmlLineInfo)reader;
+        return (xmlInfo.LineNumber, xmlInfo.LinePosition);
+    }
 }

@@ -31,10 +31,10 @@ public static class CsdlReader
     private static void Serializer_UnknownNode(object? sender, XmlNodeEventArgs e)
     {
         if (seen.Contains((e.Name, e.NodeType))) { return; } else { seen.Add((e.Name, e.NodeType)); }
-        if (e.NodeType == XmlNodeType.Attribute && e.NamespaceURI == NS.XSI)
+        if (e.NodeType == XmlNodeType.Attribute && e.NamespaceURI == XmlNamespaces.XSI)
         {
             return;
         }
-        Log.Logger.LogWarning("unknown {Type} {Name} ({No},{Co})", e.NodeType, e.Name, e.LineNumber, e.LinePosition);
+        // Log.Logger.LogWarning("unknown {Type} {Name} ({No},{Co})", e.NodeType, e.Name, e.LineNumber, e.LinePosition);
     }
 }

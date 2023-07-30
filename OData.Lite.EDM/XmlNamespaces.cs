@@ -1,6 +1,6 @@
 namespace OData.Lite;
 
-internal static class NS
+internal static class XmlNamespaces
 {
     public const string EDM = "http://docs.oasis-open.org/odata/ns/edm";
     public const string EDMLocation = " https://docs.oasis-open.org/odata/odata-csdl-xml/v4.01/os/schemas/edm.xsd";

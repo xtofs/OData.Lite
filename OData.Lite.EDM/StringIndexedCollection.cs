@@ -1,5 +1,5 @@
 namespace OData.Lite;
-using Microsoft.Extensions.Logging;
+
 
 /// <summary>
 /// a collection of items indexed by an item's string property
@@ -28,14 +28,14 @@ public abstract record class StringIndexedCollection<TItem>(Func<TItem, string> 
 
     public bool TryFind(string name, [MaybeNullWhen(false)] out TItem item)
     {
-        Log.Logger.LogInformation("find '{name}' in container '{container}' with keys [{keys}]",
-            name,
-            this.GetType().Name,
-            $"{{{string.Join(", ", index.Keys)}}}");
+        // Log.Logger.LogInformation("find '{name}' in container '{container}' with keys [{keys}]",
+        //     name,
+        //     this.GetType().Name,
+        //     $"{{{string.Join(", ", index.Keys)}}}");
 
         var res = index.TryGetValue(name, out item);
 
-        Log.Logger.LogInformation("{phrase} {item}", res ? "found" : "couldn't find", item);
+        // Log.Logger.LogInformation("{phrase} {item}", res ? "found" : "couldn't find", item);
 
         return res;
     }
@@ -98,19 +98,15 @@ public abstract record class MultiStringIndexedCollection<TItem>(Func<TItem, str
 
     public bool TryFind(string name, [MaybeNullWhen(false)] out TItem item)
     {
-        // // TODO: logging
-        // Console.WriteLine("find '{0}' in container '{1}' with keys [{2}]",
-        //     name,
-        //     this.GetType().Name,
-        //     $"{{{string.Join(", ", index.Keys.Concat(secondaryIndex.Keys))}}}");
-        Log.Logger.LogInformation("find '{name}' in container '{container}' with keys [{keys}]",
-                   name,
-                   this.GetType().Name,
-                   $"{{{string.Join(", ", index.Keys.Concat(secondaryIndex.Keys))}}}");
+
+        // Log.Logger.LogInformation("find '{name}' in container '{container}' with keys [{keys}]",
+        //            name,
+        //            this.GetType().Name,
+        //            $"{{{string.Join(", ", index.Keys.Concat(secondaryIndex.Keys))}}}");
 
         var res = index.TryGetValue(name, out item) || secondaryIndex.TryGetValue(name, out item);
 
-        Log.Logger.LogInformation("{phrase} {item}", res ? "found" : "couldn't find", item);
+        // Log.Logger.LogInformation("{phrase} {item}", res ? "found" : "couldn't find", item);
 
         return res;
     }
