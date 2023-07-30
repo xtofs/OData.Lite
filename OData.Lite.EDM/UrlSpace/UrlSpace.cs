@@ -1,7 +1,6 @@
-using System.Resources;
-using OData.Lite;
+namespace OData.Lite;
 
-record class UrlSpace(IReadOnlyList<Node> Nodes)
+public record class UrlSpace(IReadOnlyList<Node> Nodes)
 {
     public static UrlSpace From(Model model, Schema schema)
     {
@@ -71,26 +70,5 @@ record class UrlSpace(IReadOnlyList<Node> Nodes)
     {
         var w = new TreePrinter<Node>(@out, n => n.Segment, n => n.Nodes);
         w.PrintNodes(this.Nodes);
-        // var w = new System.CodeDom.Compiler.IndentedTextWriter(@out);
-        // foreach (var node in Nodes)
-        // {
-        //     node.Display(w, full);
-        // }
-    }
-}
-
-record class Node(string Segment, IReadOnlyList<Node> Nodes)
-{
-    public Node(string Segment, params Node[] nodes) : this(Segment, nodes.AsReadOnly()) { }
-
-    internal void Display(System.CodeDom.Compiler.IndentedTextWriter w, bool full)
-    {
-        w.WriteLine("{0}", this.Segment /*, full ? this.Type.FullTypeName() : this.Type.Name()*/ );
-        w.Indent += 1;
-        foreach (var node in this.Nodes)
-        {
-            node.Display(w, full);
-        }
-        w.Indent -= 1;
     }
 }
