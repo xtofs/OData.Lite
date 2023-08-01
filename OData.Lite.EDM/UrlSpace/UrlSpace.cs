@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace OData.Lite;
 
 public record class UrlSpace(IReadOnlyList<Node> Nodes)
@@ -63,6 +65,18 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
 
     private static Node FromProperty(Model model, NavigationProperty property)
     {
+        if (property.TypeFQN.StartsWith("Collection"))
+        {
+            var match = Regex.Match("Collection\\(([a-z.]+)\\)", property.TypeFQN);
+            if (match.Success)
+            {
+                var t = match.Groups["1"].Value;
+                if (model.TryResolve<EntityType>(t, out var elementType))
+                {
+                    return new Node(property.Name, FromEntityKey(model, elementType));
+                }
+            }
+        }
         return new Node(property.Name, Array.Empty<Node>());
     }
 
