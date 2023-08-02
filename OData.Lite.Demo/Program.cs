@@ -13,18 +13,17 @@ internal class Program
 
         if (Model.TryLoad(file, out var model))
         {
-            Console.WriteLine(model); ;
+            // Console.WriteLine(model); ;
             // Console.WriteLine("\n==========================================================\n");
 
             // CsdlWriter.Write("output.csdl.xml", model);
-
 
             if (model.Schemas.TryFind("ODataDemo", out var schema))
             {
                 var urlSpace = UrlSpace.From(model, schema);
                 urlSpace.Display(Console.Out);
             }
-            Console.WriteLine("\n==========================================================\n");
+            // Console.WriteLine("\n==========================================================\n");
 
             // if (model.DataServices.Schemas.TryFind("self", out var schema) &&
             //     schema.Elements.TryFind<OData.Lite.ComplexType>("Shoe", out var complex) &&

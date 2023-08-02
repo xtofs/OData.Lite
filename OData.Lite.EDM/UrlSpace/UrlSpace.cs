@@ -66,19 +66,14 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
 
     private static Node FromProperty(Model model, NavigationProperty property)
     {
-        if (property.Type.FQN.StartsWith("Collection"))
+        if (property.Type.IsCollection(out var collectionItemTypeRef))
         {
-            var match = Regex.Match("Collection\\(([a-z.]+)\\)", property.Type.FQN);
-            if (match.Success)
+            if (model.TryResolve<EntityType>(collectionItemTypeRef, out var collectionItemType))
             {
-                var elementTypeName = match.Groups["1"].Value;
-                if (model.TryResolve<EntityType>(new TypeReference(elementTypeName), out var elementType))
-                {
-                    return new Node(property.Name, FromEntityKey(model, elementType));
-                }
+                return new Node(property.Name, FromEntityKey(model, collectionItemType));
             }
         }
-        return new Node(property.Name, Array.Empty<Node>());
+        return new Node(property.Name + "?", Array.Empty<Node>());
     }
 
     public void Display(TextWriter @out)

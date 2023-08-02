@@ -1,7 +1,26 @@
+using Microsoft.VisualBasic;
+
 namespace OData.Lite;
 
 public record struct TypeReference(string FQN) : IFromXElement<TypeReference>, IXmlLineInfo
 {
+
+    public readonly bool IsCollection(out TypeReference collectionItemType)
+    {
+        if (this.FQN.StartsWith("Collection("))
+        {
+            var s = this.FQN.IndexOf('(');
+            var e = this.FQN.LastIndexOf(')');
+            if (s >= 0 && e >= 00)
+            {
+                var elementTypeName = this.FQN[s..e];
+                collectionItemType = new TypeReference(elementTypeName);
+                return true;
+            }
+        }
+        collectionItemType = default;
+        return false;
+    }
 
     public static bool TryFromXElement(XElement element, out TypeReference typeReference)
     {
