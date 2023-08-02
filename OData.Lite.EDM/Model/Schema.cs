@@ -20,9 +20,9 @@ public record class Schema(string Namespace, string Alias, SchemaElementCollecti
         string alias = element.Attribute("Alias")?.Value ?? "";
 
         var schemaElements = SchemaElementCollection.FromXElements(element.Elements());
-        EntityContainer.TryFromXElement(element.Element(EDM + "EntityContainer"), out var container);
-
-        value = new Schema(@namespace, alias, schemaElements, container) { Pos = pos };
+        // TODO: check for error: missing EntityContainer
+        EntityContainer.TryFromXElement(element.Element(EDM + "EntityContainer")!, out var container);
+        value = new Schema(@namespace, alias, schemaElements, container!) { Pos = pos };
         return true;
     }
 

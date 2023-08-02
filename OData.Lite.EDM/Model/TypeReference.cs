@@ -13,7 +13,7 @@ public record struct TypeReference(string FQN) : IFromXElement<TypeReference>, I
             var e = this.FQN.LastIndexOf(')');
             if (s >= 0 && e >= 00)
             {
-                var elementTypeName = this.FQN[s..e];
+                var elementTypeName = this.FQN[(s + 1)..e];
                 collectionItemType = new TypeReference(elementTypeName);
                 return true;
             }
@@ -38,7 +38,7 @@ public record struct TypeReference(string FQN) : IFromXElement<TypeReference>, I
 
     internal (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    readonly (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
 
 
     public override readonly string ToString()

@@ -15,13 +15,15 @@ public record class NavigationProperty(string Name, TypeReference Type, bool Nul
         var partner = element.Attribute("Partner")?.Value ?? "";
         TypeReference.TryFromXElement(element, out var typeReference);
 
-        value = new NavigationProperty(name, typeReference, nullable) { Pos = pos };
+        value = new NavigationProperty(name, typeReference, nullable) { Partner = partner, Pos = pos };
         return true;
     }
 
     internal (int LineNumber, int LinePosition) Pos { get; init; }
 
     (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+
+    public required string Partner { get; init; }
 }
 
 public class NavigationPropertyCollection : KeyedCollection<string, NavigationProperty>
