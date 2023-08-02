@@ -7,19 +7,19 @@ internal class Program
     {
         // Log.AddConsole();
 
-        // using var file = File.OpenText("example.csdl.xml");
-        var filename = Environment.GetCommandLineArgs()[1];
+        var args = Environment.GetCommandLineArgs();
+        var filename = args.Length > 1 ? args[1] : "example89.csdl.xml";
         using var file = File.OpenText(filename);
 
-        if (CsdlReader.TryRead(file, out var model))
+        if (Model.TryLoad(file, out var model))
         {
-            // Console.WriteLine(model); ;
+            Console.WriteLine(model); ;
             // Console.WriteLine("\n==========================================================\n");
 
-            CsdlWriter.Write("output.csdl.xml", model);
+            // CsdlWriter.Write("output.csdl.xml", model);
 
 
-            if (model.DataServices.Schemas.TryFind("ODataDemo", out var schema))
+            if (model.Schemas.TryFind("ODataDemo", out var schema))
             {
                 var urlSpace = UrlSpace.From(model, schema);
                 urlSpace.Display(Console.Out);

@@ -1,9 +1,5 @@
-using Microsoft.VisualBasic;
-
 namespace System.Collections.Generic;
 
-
-public delegate bool Try<S, T>(S source, [MaybeNullWhen(false)] out T value);
 
 public static class EnumerableExtensions
 {
@@ -39,17 +35,5 @@ public static class EnumerableExtensions
             previous = enumerator.Current;
         }
         yield return (previous, true);
-    }
-
-    public static IEnumerable<T> SelectWhere<S, T>(this IEnumerable<S> items, Try<S, T> selector)
-    {
-
-        foreach (var item in items)
-        {
-            if (selector(item, out var value))
-            {
-                yield return value;
-            }
-        }
     }
 }

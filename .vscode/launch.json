@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C#: Demo",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/OData.Lite.Demo/OData.Lite.Demo.csproj",
+            "launchConfigurationId": "TargetFramework=;OData.Lite.Demo"
+        }
+    ]
+}

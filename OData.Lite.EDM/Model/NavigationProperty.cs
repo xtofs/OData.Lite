@@ -1,6 +1,6 @@
 namespace OData.Lite;
 
-record class NavigationProperty(string Name, TypeReference Type) : IFromXElement<NavigationProperty>, IXmlLineInfo
+public record class NavigationProperty(string Name, TypeReference Type, bool Nullable) : IFromXElement<NavigationProperty>, IXmlLineInfo
 {
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out NavigationProperty value)
     {
@@ -11,18 +11,20 @@ record class NavigationProperty(string Name, TypeReference Type) : IFromXElement
 
         var pos = element.LineInfo();
         var name = element.Attribute("Name")?.Value ?? "";
+        var nullable = NullableAttr.FromXElement(element);
+        var partner = element.Attribute("Partner")?.Value ?? "";
         TypeReference.TryFromXElement(element, out var typeReference);
 
-        value = new NavigationProperty(name, typeReference) { Pos = pos };
+        value = new NavigationProperty(name, typeReference, nullable) { Pos = pos };
         return true;
     }
 
-    internal required (int LineNumber, int LinePosition) Pos { get; init; }
+    internal (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.Position => Pos;
+    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
 }
 
-class NavigationPropertyCollection : KeyedCollection<string, NavigationProperty>
+public class NavigationPropertyCollection : KeyedCollection<string, NavigationProperty>
 {
     public NavigationPropertyCollection()
     { }
@@ -50,5 +52,15 @@ class NavigationPropertyCollection : KeyedCollection<string, NavigationProperty>
             }
         }
         return self;
+    }
+}
+
+static class NullableAttr
+{
+    public static bool FromXElement(XElement element)
+    {
+#pragma warning disable IDE0075
+        return bool.TryParse(element.Attribute("Nullable")?.Value, out var v) ? v : true;
+#pragma warning restore IDE0075
     }
 }

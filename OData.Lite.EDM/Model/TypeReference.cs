@@ -1,0 +1,43 @@
+namespace OData.Lite;
+
+public record struct TypeReference(string FQN) : IFromXElement<TypeReference>, IXmlLineInfo
+{
+
+    public static bool TryFromXElement(XElement element, out TypeReference typeReference)
+    {
+        var attr = element.Attribute("Type");
+        if (attr == null)
+        {
+            typeReference = new("UnknownType") { Pos = element.LineInfo() }; ;
+        }
+        else
+        {
+            typeReference = new(attr.Value) { Pos = attr.LineInfo() }; ;
+        }
+        return true;
+    }
+
+    internal (int LineNumber, int LinePosition) Pos { get; init; }
+
+    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+
+
+    public override readonly string ToString()
+    {
+        return FQN;
+    }
+
+    public readonly bool TrySplit([MaybeNullWhen(false)] out string nameSpace, [MaybeNullWhen(false)] out string localName)
+    {
+        var ix = this.FQN.LastIndexOf('.');
+        if (ix < 0)
+        {
+            nameSpace = default;
+            localName = this.FQN;
+            return false;
+        }
+        nameSpace = this.FQN[..(ix)];
+        localName = this.FQN[(ix + 1)..];
+        return true;
+    }
+}

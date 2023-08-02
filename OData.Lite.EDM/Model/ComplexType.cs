@@ -18,5 +18,5 @@ record class ComplexType(string Name, PropertyCollection Properties) : SchemaEle
 
     internal required (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.Position => Pos;
+    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
 }

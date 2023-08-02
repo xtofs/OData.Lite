@@ -11,7 +11,7 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
 
     private static IEnumerable<Node> FromSchema(Model model, Schema schema)
     {
-        foreach (var containerElement in schema.EntityContainer.Elements)
+        foreach (var containerElement in schema.Container.Elements)
         {
             if (containerElement is EntitySet entitySet)
             {
@@ -37,41 +37,42 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
         }
         else
         {
-            System.Console.WriteLine("can't resolve type {0} of entitySet {1}", entitySet.EntityType, entitySet);
+            System.Console.WriteLine("unable to resolve type {0} of {1}", entitySet.EntityType, entitySet);
             return new Node($"{entitySet.Name}: unkown type {entitySet.EntityType}"); ; ;
         }
     }
 
     private static Node FromSingleton(Model model, Singleton singleton)
     {
-        if (model.TryResolve<EntityType>(singleton.EntityType, out var entityType))
+        if (model.TryResolve<EntityType>(singleton.Type, out var entityType))
         {
             return new Node(singleton.Name, entityType.NavigationProperties.Select(p => FromProperty(model, p)).ToList());
         }
         else
         {
-            System.Console.WriteLine("can't resolve type {0} of singleton {1}", singleton.EntityType, singleton);
-            return new Node($"{singleton.Name}: unkown type {singleton.EntityType}"); ; ;
+            System.Console.WriteLine("can't resolve type {0} of singleton {1}", singleton.Type, singleton);
+            return new Node($"{singleton.Name}: unkown type {singleton.Type}"); ; ;
         }
     }
 
 
     private static Node FromEntityKey(Model model, EntityType entityType)
     {
-        var key = entityType.Key;
-        var prop = entityType.Properties.Single(p => p.Name == key.PropertyRefs.ElementAt(0).Name);
-        return new Node($"{{{entityType.Name}.{prop.Name}: {prop.TypeFQN}}}", entityType.NavigationProperties.Select(p => FromProperty(model, p)).ToList());
+        var keys = entityType.Keys;
+        var key = keys[0]; // TODO error if multiple keys
+        var prop = entityType.Properties.Single(p => p.Name == key.Name);
+        return new Node($"{{{entityType.Name}.{prop.Name}: {prop.Type.FQN}}}", entityType.NavigationProperties.Select(p => FromProperty(model, p)).ToList());
     }
 
     private static Node FromProperty(Model model, NavigationProperty property)
     {
-        if (property.TypeFQN.StartsWith("Collection"))
+        if (property.Type.FQN.StartsWith("Collection"))
         {
-            var match = Regex.Match("Collection\\(([a-z.]+)\\)", property.TypeFQN);
+            var match = Regex.Match("Collection\\(([a-z.]+)\\)", property.Type.FQN);
             if (match.Success)
             {
-                var t = match.Groups["1"].Value;
-                if (model.TryResolve<EntityType>(t, out var elementType))
+                var elementTypeName = match.Groups["1"].Value;
+                if (model.TryResolve<EntityType>(new TypeReference(elementTypeName), out var elementType))
                 {
                     return new Node(property.Name, FromEntityKey(model, elementType));
                 }

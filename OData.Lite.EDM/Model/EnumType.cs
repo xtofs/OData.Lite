@@ -6,15 +6,14 @@ record class EnumType(string Name, EnumMemberCollection Members) : SchemaElement
 {
     internal required (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.Position => Pos;
+    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
 
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out EnumType value)
     {
         var pos = element.LineInfo();
         string name = element.Attribute("Name")?.Value ?? "";
 
-        var members = element.Elements()
-            .SelectWhere<XElement, EnumMember>(EnumMember.TryFromXElement);
+        var members = element.Elements().FromXElements<EnumMember>();
 
         value = new EnumType(name, new EnumMemberCollection(members)) { Pos = pos };
         return true;
@@ -51,5 +50,5 @@ record class EnumMember(string Name) : IFromXElement<EnumMember>, IXmlLineInfo
 
     internal required (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.Position => Pos;
+    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
 }
