@@ -1,25 +1,23 @@
-using System.Text.RegularExpressions;
-
 namespace OData.Lite;
 
 public record class UrlSpace(IReadOnlyList<Node> Nodes)
 {
-    public static UrlSpace From(Model model, Schema schema)
+    public static UrlSpace From(Model model, Schema schema, int maxKeys = 2)
     {
-        return new UrlSpace(FromSchema(model, 5, schema).ToList());
+        return new UrlSpace(FromSchema(model, schema, maxKeys).ToList());
     }
 
-    private static IEnumerable<Node> FromSchema(Model model, int depth, Schema schema)
+    private static IEnumerable<Node> FromSchema(Model model, Schema schema, int maxKeys)
     {
         foreach (var containerElement in schema.Container.Elements)
         {
             if (containerElement is EntitySet entitySet)
             {
-                yield return FromEntitySet(model, depth, entitySet);
+                yield return FromEntitySet(model, entitySet, maxKeys);
             }
             else if (containerElement is Singleton singleton)
             {
-                yield return FromSingleton(model, depth, singleton);
+                yield return FromSingleton(model, singleton, maxKeys);
             }
             else
             {
@@ -28,12 +26,12 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
         }
     }
 
-    private static Node FromEntitySet(Model model, int depth, EntitySet entitySet)
+    private static Node FromEntitySet(Model model, EntitySet entitySet, int maxKeys)
     {
         if (model.TryResolve<EntityType>(entitySet.EntityType, out var entityType))
         {
 
-            return new Node(entitySet.Name, FromEntityKey(model, depth - 1, entityType));
+            return new Node(entitySet.Name, FromEntityKey(model, entityType, maxKeys));
         }
         else
         {
@@ -42,12 +40,12 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
         }
     }
 
-    private static Node FromSingleton(Model model, int depth, Singleton singleton)
+    private static Node FromSingleton(Model model, Singleton singleton, int maxKeys)
     {
         if (model.TryResolve<EntityType>(singleton.Type, out var entityType))
         {
             // return new Node(singleton.Name, entityType.NavigationProperties.Select(p => FromProperty(model, p)).ToList());
-            return new Node(singleton.Name, FromStructuralType(model, depth - 1, entityType.NavigationProperties));
+            return new Node(singleton.Name, FromStructuralType(model, entityType.NavigationProperties, maxKeys));
         }
         else
         {
@@ -56,39 +54,39 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
         }
     }
 
-    private static Node FromEntityKey(Model model, int depth, EntityType entityType)
+    private static Node FromEntityKey(Model model, EntityType entityType, int maxKeys)
     {
         var keys = entityType.Keys;
         var key = keys[0]; // TODO error if multiple keys
         var prop = entityType.Properties.Single(p => p.Name == key.Name);
         return new Node($"{{{entityType.Name}.{prop.Name}: {prop.Type.FQN}}}",
-            entityType.NavigationProperties.Select(p => FromProperty(model, depth - 1, p)).ToList());
+            entityType.NavigationProperties.Select(p => FromProperty(model, p, maxKeys - 1)).ToList());
     }
 
-    private static Node FromProperty(Model model, int depth, NavigationProperty property)
+    private static Node FromProperty(Model model, NavigationProperty property, int maxKeys)
     {
         if (property.Type.IsCollection(out var collectionItemTypeRef))
         {
             if (model.TryResolve<EntityType>(collectionItemTypeRef, out var collectionItemType))
             {
-                return new Node(property.Name, FromEntityKey(model, depth - 1, collectionItemType));
+                return new Node(property.Name, FromEntityKey(model, collectionItemType, maxKeys));
             }
             return new Node(property.Name + $": Unkown<{property.Type}>", Array.Empty<Node>());
         }
         if (model.TryResolve<EntityType>(property.Type, out var entityType))
         {
-            return new Node(property.Name, FromStructuralType(model, depth - 1, entityType.NavigationProperties));
+            return new Node(property.Name, FromStructuralType(model, entityType.NavigationProperties, maxKeys));
         }
         return new Node(property.Name + $": {property.Type} ?", Array.Empty<Node>());
     }
 
-    private static IReadOnlyList<Node> FromStructuralType(Model model, int depth, NavigationPropertyCollection NavigationProperties)
+    private static IReadOnlyList<Node> FromStructuralType(Model model, NavigationPropertyCollection NavigationProperties, int maxKeys)
     {
-        if (depth <= 0)
+        if (maxKeys <= 0)
         {
             return Array.Empty<Node>();
         }
-        return NavigationProperties.Select(p => FromProperty(model, depth - 1, p)).ToList();
+        return NavigationProperties.Select(p => FromProperty(model, p, maxKeys)).ToList();
     }
 
     public void Display(TextWriter @out)
