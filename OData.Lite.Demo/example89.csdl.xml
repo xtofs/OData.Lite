@@ -43,10 +43,10 @@
 
                 <Property Name="Currency" Type="Edm.String" MaxLength="3" />
 
-                <NavigationProperty Name="Category" Type="ODataDemo.Category"
+                <NavigationProperty Name="category" Type="ODataDemo.Category"
                     Nullable="false" Partner="Products" />
 
-                <NavigationProperty Name="Supplier" Type="ODataDemo.Supplier"
+                <NavigationProperty Name="supplier" Type="ODataDemo.Supplier"
                     Partner="Products" />
             </EntityType>
             <EntityType Name="Category">
@@ -59,7 +59,7 @@
 
                 </Property>
 
-                <NavigationProperty Name="Products" Partner="Category"
+                <NavigationProperty Name="products" Partner="Category"
                     Type="Collection(ODataDemo.Product)">
                     <OnDelete Action="Cascade" />
 
@@ -73,7 +73,7 @@
                 <Property Name="Name" Type="Edm.String" />
                 <Property Name="Address" Type="ODataDemo.Address" Nullable="false" />
                 <Property Name="Concurrency" Type="Edm.Int32" Nullable="false" />
-                <NavigationProperty Name="Products" Partner="Supplier"
+                <NavigationProperty Name="products" Partner="Supplier"
                     Type="Collection(ODataDemo.Product)" />
 
             </EntityType>
@@ -98,7 +98,7 @@
                 <Property Name="State" Type="Edm.String" />
                 <Property Name="ZipCode" Type="Edm.String" />
                 <Property Name="CountryName" Type="Edm.String" />
-                <NavigationProperty Name="Country" Type="ODataDemo.Country">
+                <NavigationProperty Name="country" Type="ODataDemo.Country">
 
                     <ReferentialConstraint Property="CountryName"
                         ReferencedProperty="Name" />
@@ -112,17 +112,17 @@
                 <ReturnType Type="Collection(ODataDemo.Product)" />
             </Function>
             <EntityContainer Name="DemoService">
-                <EntitySet Name="Products" EntityType="ODataDemo.Product">
+                <EntitySet Name="products" EntityType="ODataDemo.Product">
                     <NavigationPropertyBinding Path="Category" Target="Categories" />
 
                 </EntitySet>
-                <EntitySet Name="Categories" EntityType="ODataDemo.Category">
+                <EntitySet Name="categories" EntityType="ODataDemo.Category">
                     <NavigationPropertyBinding Path="Products" Target="Products" />
 
                     <Annotation Term="Core.Description" String="Product Categories" />
 
                 </EntitySet>
-                <EntitySet Name="Suppliers" EntityType="ODataDemo.Supplier">
+                <EntitySet Name="suppliers" EntityType="ODataDemo.Supplier">
                     <NavigationPropertyBinding Path="Products" Target="Products" />
 
                     <NavigationPropertyBinding Path="Address/Country"
@@ -139,14 +139,14 @@
                     </Annotation>
 
                 </EntitySet>
-                <Singleton Name="MainSupplier" Type="ODataDemo.Supplier">
+                <Singleton Name="mainSupplier" Type="ODataDemo.Supplier">
                     <NavigationPropertyBinding Path="Products" Target="Products" />
 
                     <Annotation Term="Core.Description" String="Primary Supplier" />
 
                 </Singleton>
 
-                <EntitySet Name="Countries" EntityType="ODataDemo.Country" />
+                <EntitySet Name="countries" EntityType="ODataDemo.Country" />
 
                 <FunctionImport Name="ProductsByRating" EntitySet="Products"
                     Function="ODataDemo.ProductsByRating" />
