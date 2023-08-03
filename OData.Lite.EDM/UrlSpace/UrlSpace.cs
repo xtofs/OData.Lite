@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+
 
 namespace OData.Lite;
 
@@ -28,17 +28,19 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
         }
     }
 
+    private static string Collection(TypeReference type) => $"[{type.FQN}]";
+
     private static Node FromEntitySet(Model model, EntitySet entitySet, int maxKeys)
     {
         if (model.TryResolve<EntityType>(entitySet.EntityType, out var entityType))
         {
 
-            return new Node(entitySet.Name, $"[{entitySet.EntityType.FQN}]", FromEntityKey(model, entityType, maxKeys));
+            return new PropertyNode(entitySet.Name, Collection(entitySet.EntityType), FromEntityKey(model, entityType, maxKeys));
         }
         else
         {
             System.Console.WriteLine("unable to resolve type {0} of {1}", entitySet.EntityType, entitySet);
-            return new Node(entitySet.Name, $"unkown type {entitySet.EntityType}");
+            return new PropertyNode(entitySet.Name, $"unkown type {entitySet.EntityType}");
         }
     }
 
@@ -47,12 +49,12 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
         if (model.TryResolve<EntityType>(singleton.Type, out var entityType))
         {
             var nodes = FromStructuralType(model, entityType.NavigationProperties, entityType.Properties, maxKeys);
-            return new Node(singleton.Name, singleton.Type.FQN, nodes);
+            return new PropertyNode(singleton.Name, singleton.Type.FQN, nodes);
         }
         else
         {
             System.Console.WriteLine("can't resolve type {0} of singleton {1}", singleton.Type, singleton);
-            return new Node(singleton.Name, $"unkown type {singleton.Type}");
+            return new PropertyNode(singleton.Name, $"unkown type {singleton.Type}");
         }
     }
 
@@ -61,9 +63,7 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
         var keys = entityType.Keys;
         var key = keys[0]; // TODO error if multiple keys
         var prop = entityType.Properties.Single(p => p.Name == key.Name);
-        return new Node(
-            $"{{{entityType.Name}.{prop.Name}: {prop.Type.FQN}}}",
-            entityType.Name,
+        return new KeyNode(prop.Name, prop.Type.FQN, entityType.Name,
             entityType.NavigationProperties.Select(p => FromProperty(model, p, maxKeys - 1)).ToList());
     }
 
@@ -73,7 +73,7 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
         {
             if (model.TryResolve<ComplexType>(property.Type, out var complexType))
             {
-                yield return new Node(property.Name, property.Type.FQN, FromComplexType(model, complexType, maxKeys));
+                yield return new PropertyNode(property.Name, property.Type.FQN, FromComplexType(model, complexType, maxKeys));
             }
         }
     }
@@ -84,17 +84,17 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
         {
             if (model.TryResolve<EntityType>(collectionItemTypeRef, out var collectionItemType))
             {
-                return new Node(property.Name, $"[{collectionItemTypeRef.FQN}]", FromEntityKey(model, collectionItemType, maxKeys));
+                return new PropertyNode(property.Name, Collection(collectionItemTypeRef), FromEntityKey(model, collectionItemType, maxKeys));
             }
-            return new Node(property.Name, $": Unkown<{property.Type.FQN}>", Array.Empty<Node>());
+            return new PropertyNode(property.Name, $": Unkown<{property.Type.FQN}>", Array.Empty<Node>());
         }
         if (model.TryResolve<EntityType>(property.Type, out var entityType))
         {
-            return new Node(property.Name,
+            return new PropertyNode(property.Name,
             property.Type.FQN,
             FromStructuralType(model, entityType.NavigationProperties, entityType.Properties, maxKeys));
         }
-        return new Node(
+        return new PropertyNode(
             property.Name,
             $"unknown {property.Type.FQN}",
             Array.Empty<Node>());
@@ -123,7 +123,7 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
         w.PrintNodes(this.Nodes);
     }
 
-    public IEnumerable<ImmutableList<string>> Flatten()
+    public IEnumerable<(ImmutableList<string> Path, string Type)> Flatten()
     {
         return Nodes.SelectMany(n => n.Flatten(ImmutableList<string>.Empty));
     }
