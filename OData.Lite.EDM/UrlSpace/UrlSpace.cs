@@ -125,6 +125,6 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
 
     public IEnumerable<ImmutableList<string>> Flatten()
     {
-        return Nodes.SelectMany(n => n.Flatten(ImmutableList.Create(n.Segment)));
+        return Nodes.SelectMany(n => n.Flatten(ImmutableList<string>.Empty));
     }
 }
