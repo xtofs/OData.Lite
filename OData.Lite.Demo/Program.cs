@@ -24,6 +24,11 @@ internal class Program
                 urlSpace.Display(Console.Out);
 
 
+                foreach (var path in urlSpace.Flatten())
+                {
+                    Console.WriteLine(string.Join("/", path));
+                }
+
             }
             // Console.WriteLine("\n==========================================================\n");
 

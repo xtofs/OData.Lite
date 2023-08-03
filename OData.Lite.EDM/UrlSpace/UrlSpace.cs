@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace OData.Lite;
 
 public record class UrlSpace(IReadOnlyList<Node> Nodes)
@@ -119,5 +121,10 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
     {
         var w = new TreePrinter<Node>(@out, n => $"{n.Segment}: {n.Type}", n => n.Nodes);
         w.PrintNodes(this.Nodes);
+    }
+
+    public IEnumerable<ImmutableList<string>> Flatten()
+    {
+        return Nodes.SelectMany(n => n.Flatten(ImmutableList.Create(n.Segment)));
     }
 }
