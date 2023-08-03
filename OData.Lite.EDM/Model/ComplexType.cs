@@ -2,7 +2,8 @@ using System.Data;
 
 namespace OData.Lite;
 
-record class ComplexType(string Name, PropertyCollection Properties) : SchemaElement(Name), IFromXElement<ComplexType>, IXmlLineInfo
+record class ComplexType(string Name, PropertyCollection Properties, NavigationPropertyCollection NavigationProperties)
+ : SchemaElement(Name), IFromXElement<ComplexType>, IXmlLineInfo
 {
 
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out ComplexType value)
@@ -11,8 +12,9 @@ record class ComplexType(string Name, PropertyCollection Properties) : SchemaEle
         string name = element.Attribute("Name")?.Value ?? "";
 
         var properties = PropertyCollection.FromXElements(element.Elements());
+        var navigationProperties = NavigationPropertyCollection.FromXElements(element.Elements());
 
-        value = new ComplexType(name, properties) { Pos = pos };
+        value = new ComplexType(name, properties, navigationProperties) { Pos = pos };
         return true;
     }
 

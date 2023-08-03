@@ -1,8 +1,8 @@
 namespace OData.Lite;
 
-public record class Node(string Segment, IReadOnlyList<Node> Nodes)
+public record class Node(string Segment, string Type, IReadOnlyList<Node> Nodes)
 {
-    public Node(string Segment, params Node[] nodes) : this(Segment, nodes.AsReadOnly()) { }
+    public Node(string Segment, string Type, params Node[] nodes) : this(Segment, Type, nodes.AsReadOnly()) { }
 
     internal void Display(System.CodeDom.Compiler.IndentedTextWriter w, bool full)
     {

@@ -22,6 +22,8 @@ internal class Program
             {
                 var urlSpace = UrlSpace.From(model, schema);
                 urlSpace.Display(Console.Out);
+
+
             }
             // Console.WriteLine("\n==========================================================\n");
 
