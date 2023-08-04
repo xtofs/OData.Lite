@@ -3,5 +3,14 @@ using Microsoft.AspNetCore.Http;
 
 public interface IODataService
 {
-    public IResult Get(string template, IReadOnlyDictionary<string, string> keys);
+    IResult Get(string template, IReadOnlyDictionary<string, string> keys, string resultType);
+
+
 }
+
+
+// public interface IGetService<T>
+// {
+//     OData<T> Get(string urlPath, IReadOnlyDictionary<string, string> keys);
+
+// }

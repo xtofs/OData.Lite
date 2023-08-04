@@ -38,7 +38,8 @@ public sealed record class PropertyNode(string Segment, string Type, IReadOnlyLi
 }
 
 public sealed record class KeyNode(string KeyName, string KeyType, string Type, IReadOnlyList<Node> Nodes) :
-     Node($"{{{KeyName}: {KeyType}}}", Type, Nodes)
+     //  Node($"{{{KeyName}: {KeyType}}}", Type, Nodes)
+     Node($"{{{KeyName}}}", Type, Nodes)
 {
     public KeyNode(string keyName, string keyType, string type, params Node[] nodes) : this(keyName, keyType, type, nodes.AsReadOnly()) { }
 }

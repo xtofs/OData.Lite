@@ -61,7 +61,7 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
     private static Node FromEntityKey(Model model, EntityType entityType, int maxKeys)
     {
         var keys = entityType.Keys;
-        var key = keys[0]; // TODO error if multiple keys
+        var key = keys[0]; // TODO  error handling for composite keys
         var prop = entityType.Properties.Single(p => p.Name == key.Name);
         return new KeyNode(prop.Name, prop.Type.FQN, entityType.Name,
             entityType.NavigationProperties.Select(p => FromProperty(model, p, maxKeys - 1)).ToList());
@@ -121,6 +121,13 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
     {
         var w = new TreePrinter<Node>(@out, n => $"{n.Segment}: {n.Type}", n => n.Nodes);
         w.PrintNodes(this.Nodes);
+    }
+
+    public override string ToString()
+    {
+        using var w = new StringWriter();
+        Display(w);
+        return w.ToString();
     }
 
     public IEnumerable<(ImmutableList<string> Path, string Type)> Flatten()
