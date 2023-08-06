@@ -2,11 +2,11 @@ using System.Xml.Linq;
 
 namespace OData.Lite;
 
-record class EnumType(string Name, EnumMemberCollection Members) : SchemaElement(Name), IFromXElement<EnumType>, IXmlLineInfo
+record class EnumType(string Name, EnumMemberCollection Members) : SchemaElement(Name), IFromXElement<EnumType>, ILineInfo
 {
     internal required (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out EnumType value)
     {
@@ -38,7 +38,7 @@ class EnumMemberCollection : KeyedCollection<string, EnumMember>
     }
 }
 
-record class EnumMember(string Name) : IFromXElement<EnumMember>, IXmlLineInfo
+record class EnumMember(string Name) : IFromXElement<EnumMember>, ILineInfo
 {
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out EnumMember value)
     {
@@ -50,5 +50,5 @@ record class EnumMember(string Name) : IFromXElement<EnumMember>, IXmlLineInfo
 
     internal required (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 }

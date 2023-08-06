@@ -1,9 +1,9 @@
 namespace OData.Lite;
 
 
-public record class Model(string Version, SchemaCollection Schemas) : IFromXElement<Model>, IXmlLineInfo
+public record class Model(string Version, SchemaCollection Schemas) : IFromXElement<Model>, ILineInfo
 {
-    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 
     internal (int, int) Pos { get; init; }
 

@@ -1,7 +1,7 @@
 namespace OData.Lite;
 
 // https://docs.oasis-open.org/odata/odata-csdl-xml/v4.01/odata-csdl-xml-v4.01.html#sec_Singleton
-public record class Singleton(string Name, TypeReference Type) : ContainerElement(Name), IFromXElement<Singleton>, IXmlLineInfo
+public record class Singleton(string Name, TypeReference Type) : ContainerElement(Name), IFromXElement<Singleton>, ILineInfo
 {
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out Singleton value)
     {
@@ -21,5 +21,5 @@ public record class Singleton(string Name, TypeReference Type) : ContainerElemen
 
     internal (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 }

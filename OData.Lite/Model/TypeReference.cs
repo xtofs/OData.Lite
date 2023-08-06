@@ -2,7 +2,7 @@ using Microsoft.VisualBasic;
 
 namespace OData.Lite;
 
-public record struct TypeReference(string FQN) : IFromXElement<TypeReference>, IXmlLineInfo
+public record struct TypeReference(string FQN) : IFromXElement<TypeReference>, ILineInfo
 {
 
     public readonly bool IsCollection(out TypeReference collectionItemType)
@@ -38,7 +38,7 @@ public record struct TypeReference(string FQN) : IFromXElement<TypeReference>, I
 
     internal (int LineNumber, int LinePosition) Pos { get; init; }
 
-    readonly (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    readonly (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 
 
     public override readonly string ToString()

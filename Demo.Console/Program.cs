@@ -24,31 +24,10 @@ internal class Program
                 var urlSpace = UrlSpace.From(model, schema, 3);
                 urlSpace.Display(Console.Out);
 
-
-                using var writer = File.CreateText("../OData.Lite.Web/mapping.cs");
-
-                writer.WriteLine("public static class AppExtensions");
-                writer.WriteLine("{");
-                writer.WriteLine("    public static void MapService(this WebApplication app)");
-                writer.WriteLine("    {");
-
-                foreach (var (rawPath, type) in urlSpace.Paths())
+                foreach (var path in urlSpace.Paths())
                 {
-                    var path = MakeKeyNamesUnique(rawPath).ToList();
-                    var keys = path.WhereSelect<string, string>(StringExtensions.TryGetKeyName);
-
-                    Console.WriteLine("// /{0}: {1}", string.Join("/", path), type);
-
-                    // var urlTemplate = string.Join("/", path);
-                    // var @params = string.Join(", ", from key in keys select $"string {key}");
-                    // var dict = from key in keys select $"[\"{key}\"]={key}";
-                    // writer.WriteLine(
-                    //     $"        app.MapGet(\"{urlTemplate}\", \n\t\t\t(IODataService service{(@params.Any() ? ", " : "")}{@params}) => \n\t\t\t\tservice.Get(\"{urlTemplate}\", new Dictionary<string, string> {{ {string.Join(",", dict)} }}, \"{type}\"));"
-                    // );
+                    Console.WriteLine(string.Join("/", from seg in path select seg.Name));
                 }
-
-                writer.WriteLine("    }");
-                writer.WriteLine("}");
             }
 
             // Console.WriteLine("\n==========================================================\n");

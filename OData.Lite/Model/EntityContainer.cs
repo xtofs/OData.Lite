@@ -1,11 +1,11 @@
 namespace OData.Lite;
 
 // https://docs.oasis-open.org/odata/odata-csdl-xml/v4.01/odata-csdl-xml-v4.01.html#sec_EntityContainer
-public record class EntityContainer(string Name, ContainerElementCollection Elements) : IFromXElement<EntityContainer>, IXmlLineInfo
+public record class EntityContainer(string Name, ContainerElementCollection Elements) : IFromXElement<EntityContainer>, ILineInfo
 {
     internal (int, int) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 
 
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out EntityContainer value)

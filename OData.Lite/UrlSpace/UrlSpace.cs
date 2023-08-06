@@ -119,7 +119,7 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
 
     public void Display(TextWriter @out)
     {
-        var w = new TreePrinter<Node>(@out, n => $"{n.Segment}: {n.Type}", n => n.Nodes);
+        var w = new TreePrinter<Node>(@out, n => $"{n.Label}: {n.Type}", n => n.Nodes);
         w.PrintNodes(this.Nodes);
     }
 
@@ -130,8 +130,8 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
         return w.ToString();
     }
 
-    public IEnumerable<(ImmutableList<string> Path, string Type)> Paths()
+    public IEnumerable<ImmutableList<Segment>> Paths()
     {
-        return Nodes.SelectMany(n => n.Flatten(ImmutableList<string>.Empty));
+        return Nodes.SelectMany(n => n.Paths(ImmutableList<Segment>.Empty, ImmutableDictionary<string,uint>.Empty));
     }
 }

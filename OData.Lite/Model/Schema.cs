@@ -2,11 +2,11 @@ using System.Xml.Linq;
 
 namespace OData.Lite;
 
-public record class Schema(string Namespace, string Alias, SchemaElementCollection Elements, EntityContainer Container) : IFromXElement<Schema>, IXmlLineInfo
+public record class Schema(string Namespace, string Alias, SchemaElementCollection Elements, EntityContainer Container) : IFromXElement<Schema>, ILineInfo
 {
     internal (int, int) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 
 
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out Schema value)

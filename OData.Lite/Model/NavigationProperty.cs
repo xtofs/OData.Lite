@@ -1,6 +1,6 @@
 namespace OData.Lite;
 
-public record class NavigationProperty(string Name, TypeReference Type, bool Nullable) : IFromXElement<NavigationProperty>, IXmlLineInfo
+public record class NavigationProperty(string Name, TypeReference Type, bool Nullable) : IFromXElement<NavigationProperty>, ILineInfo
 {
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out NavigationProperty value)
     {
@@ -21,7 +21,7 @@ public record class NavigationProperty(string Name, TypeReference Type, bool Nul
 
     internal (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 
     public required string Partner { get; init; }
 }

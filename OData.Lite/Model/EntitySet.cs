@@ -1,7 +1,7 @@
 namespace OData.Lite;
 
 // https://docs.oasis-open.org/odata/odata-csdl-xml/v4.01/odata-csdl-xml-v4.01.html#sec_EntitySet
-public record class EntitySet(string Name, TypeReference EntityType) : ContainerElement(Name), IFromXElement<EntitySet>, IXmlLineInfo
+public record class EntitySet(string Name, TypeReference EntityType) : ContainerElement(Name), IFromXElement<EntitySet>, ILineInfo
 {
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out EntitySet value)
     {
@@ -21,5 +21,5 @@ public record class EntitySet(string Name, TypeReference EntityType) : Container
 
     internal (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 }

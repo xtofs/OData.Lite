@@ -1,7 +1,7 @@
 namespace OData.Lite;
 
 // https://docs.oasis-open.org/odata/odata-csdl-xml/v4.01/odata-csdl-xml-v4.01.html#sec_EntityType
-record class EntityType(string Name, PropertyRefCollection Keys, PropertyCollection Properties, NavigationPropertyCollection NavigationProperties) : SchemaElement(Name), IFromXElement<EntityType>, IXmlLineInfo
+record class EntityType(string Name, PropertyRefCollection Keys, PropertyCollection Properties, NavigationPropertyCollection NavigationProperties) : SchemaElement(Name), IFromXElement<EntityType>, ILineInfo
 {
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out EntityType value)
     {
@@ -25,7 +25,7 @@ record class EntityType(string Name, PropertyRefCollection Keys, PropertyCollect
 
     internal required (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 }
 
 
@@ -54,7 +54,7 @@ public class PropertyRefCollection : KeyedCollection<string, PropertyRef>
     }
 }
 
-public record class PropertyRef(string Name, string? Alias) : IFromXElement<PropertyRef>, IXmlLineInfo
+public record class PropertyRef(string Name, string? Alias) : IFromXElement<PropertyRef>, ILineInfo
 {
     public static bool TryFromXElement(XElement element, out PropertyRef propertyRef)
     {
@@ -66,6 +66,6 @@ public record class PropertyRef(string Name, string? Alias) : IFromXElement<Prop
 
     internal (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 
 }

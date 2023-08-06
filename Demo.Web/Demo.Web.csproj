@@ -9,9 +9,6 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.9" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\OData.Lite\OData.Lite.csproj" />
     <ProjectReference Include="..\OData.Lite.Web\OData.Lite.Web.csproj" />
   </ItemGroup>

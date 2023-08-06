@@ -16,14 +16,20 @@ public class ODataApplication
     public static ODataApplication Build(WebApplicationBuilder builder, Model model, Schema schema)
     {
         var urlSpace = UrlSpace.From(model, schema);
-        var paths = urlSpace.Paths().Select(p => ("/" + string.Join("/", p.Item1), false));
-        var expected = paths.ToDictionary(p => p.Item1, p => p.Item2);
+        //var paths = urlSpace.Paths();
+        var paths = urlSpace.Paths().Select(p => "/" + string.Join("/", from s in p select s.Name));
+        var expected = paths.ToDictionary(p => p, _ => false);
 
         var app = builder.Build();
 
         // if (app.Environment.IsDevelopment())
         {
-            app.MapGet("/", () => Results.Extensions.Table(from p in expected select new[] { p.Key, p.Value ? "registered" : "missing" }));
+            app.MapGet("/", () => Results.Extensions.Table(
+                from p in expected select new[] {
+                    string.Join("/", p.Key), 
+                    p.Value ? "registered" : "missing" 
+                }
+            ));
             app.MapGet("/urlspace", () => Results.Text(urlSpace.ToString()));
 
         }

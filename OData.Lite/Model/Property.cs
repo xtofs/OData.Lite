@@ -1,6 +1,6 @@
 namespace OData.Lite;
 
-public record class Property(string Name, bool Nullable, TypeReference Type) : IFromXElement<Property>, IXmlLineInfo
+public record class Property(string Name, bool Nullable, TypeReference Type) : IFromXElement<Property>, ILineInfo
 {
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out Property value)
     {
@@ -19,7 +19,7 @@ public record class Property(string Name, bool Nullable, TypeReference Type) : I
 
     internal (int LineNumber, int LinePosition) Pos { get; init; }
 
-    (int LineNumber, int LinePosition) IXmlLineInfo.LineInfo => Pos;
+    (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 }
 
 

@@ -1,7 +1,7 @@
 
 namespace OData.Lite;
 
-interface IXmlLineInfo
+interface ILineInfo
 {
     (int LineNumber, int LinePosition) LineInfo { get; }
 }
