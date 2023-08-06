@@ -54,6 +54,11 @@ public class ODataApplication
         {
             WebApplication.Logger.LogError($"{missing} missing registrations, see http://localhost for details");
         }
+        foreach (var p in Expected.Where(p => !p.Value).Select(p => p.Key))
+        {
+            WebApplication.MapGet(p, () => Results.Text($"{p} not implemented"));
+        }
+
         WebApplication.Run();
     }
 
