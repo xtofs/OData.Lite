@@ -130,7 +130,7 @@ public record class UrlSpace(IReadOnlyList<Node> Nodes)
         return w.ToString();
     }
 
-    public IEnumerable<(ImmutableList<string> Path, string Type)> Flatten()
+    public IEnumerable<(ImmutableList<string> Path, string Type)> Paths()
     {
         return Nodes.SelectMany(n => n.Flatten(ImmutableList<string>.Empty));
     }
