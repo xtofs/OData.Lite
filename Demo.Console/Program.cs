@@ -6,44 +6,64 @@ internal class Program
 
     private static void Main()
     {
-        // // Log.AddConsole();
-
-        var cliArgs = Environment.GetCommandLineArgs();
-        var filename = cliArgs.Length > 1 ? cliArgs[1] : "example89.csdl.xml";
-        using var file = File.OpenText(filename);
-
-        if (Model.TryLoad(file, out var model))
+        var examples = new[]{
+            """<Foo Int="7"/>""",
+            """<Foo><Int>7</Int></Foo>""",
+            """<Foo><Bool>true</Bool></Foo>""",
+            """<Foo Bool="false"><Bool>true</Bool></Foo>""",
+            """<Foo Int="7"><Bool>true</Bool></Foo>""",
+        };
+        foreach (var example in examples)
         {
-            // Console.WriteLine(model); ;
-            // Console.WriteLine("\n==========================================================\n");
+            var e = XElement.Parse(example, LoadOptions.SetLineInfo|LoadOptions.SetBaseUri);
 
-            // CsdlWriter.Write("output.csdl.xml", model);
-
-            if (model.Schemas.TryFind("ODataDemo", out var schema))
+            if(AnnotationExpression.TryFromXElement(e, out var a)) { 
+            Console.WriteLine(a);
+            Console.WriteLine();
+            } else
             {
-                var urlSpace = UrlSpace.From(model, schema, 3);
-                urlSpace.Display(Console.Out);
-
-                foreach (var path in urlSpace.Paths())
-                {
-                    Console.WriteLine(string.Join("/", from seg in path select seg.Name));
-                }
+                Console.WriteLine("failed to parse {0}", e);
             }
-
-            // Console.WriteLine("\n==========================================================\n");
-            // if (model.DataServices.Schemas.TryFind("self", out var schema) &&
-            //     schema.Elements.TryFind<OData.Lite.ComplexType>("Shoe", out var complex) &&
-            //     complex.Properties.TryFind("color", out var prop) &&
-            //     model.TryResolve<EnumType>(prop.Type, out var color)
-            // )
-            // {
-            //     Console.WriteLine("found self/Show/color's type: {0}", color);
-            // }
-            // else
-            // {
-            //     Console.WriteLine("couldn't find self/Show/color's type");
-            // }
         }
+
+        // // // Log.AddConsole();
+
+        // var cliArgs = Environment.GetCommandLineArgs();
+        // var filename = cliArgs.Length > 1 ? cliArgs[1] : "example89.csdl.xml";
+        // using var file = File.OpenText(filename);
+
+        // if (Model.TryLoad(file, out var model))
+        // {
+        //     // Console.WriteLine(model); ;
+        //     // Console.WriteLine("\n==========================================================\n");
+
+        //     // CsdlWriter.Write("output.csdl.xml", model);
+
+        //     if (model.Schemas.TryFind("ODataDemo", out var schema))
+        //     {
+        //         var urlSpace = UrlSpace.From(model, schema, 3);
+        //         urlSpace.Display(Console.Out);
+
+        //         foreach (var path in urlSpace.Paths())
+        //         {
+        //             Console.WriteLine(string.Join("/", from seg in path select seg.Name));
+        //         }
+        //     }
+
+        //     // Console.WriteLine("\n==========================================================\n");
+        //     // if (model.DataServices.Schemas.TryFind("self", out var schema) &&
+        //     //     schema.Elements.TryFind<OData.Lite.ComplexType>("Shoe", out var complex) &&
+        //     //     complex.Properties.TryFind("color", out var prop) &&
+        //     //     model.TryResolve<EnumType>(prop.Type, out var color)
+        //     // )
+        //     // {
+        //     //     Console.WriteLine("found self/Show/color's type: {0}", color);
+        //     // }
+        //     // else
+        //     // {
+        //     //     Console.WriteLine("couldn't find self/Show/color's type");
+        //     // }
+        // }
     }
 
     static IEnumerable<string> MakeKeyNamesUnique(ImmutableList<string> path)
