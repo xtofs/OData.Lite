@@ -41,7 +41,7 @@ public static class EnumerableExtensions
 
 
 
-    public static IEnumerable<T> WhereSelect<S, T>(this IEnumerable<S> items, Try<S, T> tryGet)
+    public static IEnumerable<T> SelectWhere<S, T>(this IEnumerable<S> items, Try<S, T> tryGet)
     {
         foreach (var item in items)
         {

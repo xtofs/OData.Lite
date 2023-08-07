@@ -7,23 +7,25 @@ internal class Program
     private static void Main()
     {
         var examples = new[]{
-            """<Foo Int="7"/>""",
-            """<Foo><Int>7</Int></Foo>""",
-            """<Foo><Bool>true</Bool></Foo>""",
-            """<Foo Bool="false"><Bool>true</Bool></Foo>""",
-            """<Foo Int="7"><Bool>true</Bool></Foo>""",
+            //"""<Foo Int="7"/>""",
+            //"""<Foo><Int>7</Int></Foo>""",
+            //"""<Foo><Bool>true</Bool></Foo>""",
+            //"""<Foo Bool="false"><Bool>true</Bool></Foo>""",
+            //"""<Foo Int="7"><Bool>true</Bool></Foo>""",
+            //"""<Foo><Null/></Foo>""",
+            """<Foo><Collection><Int>1</Int><Int>2</Int></Collection></Foo>""",
         };
         foreach (var example in examples)
         {
             var e = XElement.Parse(example, LoadOptions.SetLineInfo|LoadOptions.SetBaseUri);
 
             if(AnnotationExpression.TryFromXElement(e, out var a)) { 
-            Console.WriteLine(a);
-            Console.WriteLine();
+                Console.WriteLine(a);
             } else
             {
-                Console.WriteLine("failed to parse {0}", e);
+                Console.WriteLine("failed to parse {0}", e.ToString(SaveOptions.DisableFormatting));
             }
+            Console.WriteLine();
         }
 
         // // // Log.AddConsole();

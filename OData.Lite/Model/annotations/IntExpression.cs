@@ -20,5 +20,4 @@ public sealed record class IntExpression(int Value) :
         value = default;
         return false;
     }
-
 }
