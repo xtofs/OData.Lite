@@ -3,6 +3,7 @@
 public sealed record class NullExpression() :
     AnnotationExpression(), IFromXElement<NullExpression>, ILineInfo
 {
+
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out NullExpression value)
     {
         var e = element.Element("Null");

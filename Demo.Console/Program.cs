@@ -7,23 +7,28 @@ internal class Program
     private static void Main()
     {
         var examples = new[]{
-            //"""<Foo Int="7"/>""",
-            //"""<Foo><Int>7</Int></Foo>""",
-            //"""<Foo><Bool>true</Bool></Foo>""",
-            //"""<Foo Bool="false"><Bool>true</Bool></Foo>""",
-            //"""<Foo Int="7"><Bool>true</Bool></Foo>""",
-            //"""<Foo><Null/></Foo>""",
-            """<Foo><Collection><Int>1</Int><Int>2</Int></Collection></Foo>""",
+            """<Annotation Int="7"/>""",
+            """<Annotation Bool="false"/>""",
+            """<Annotation><Bool>true</Bool></Annotation>""",
+
+            """<Annotation><Int>7</Int></Annotation>""",
+            """<Annotation><Bool>true</Bool></Annotation>""",
+            """<Annotation><Null/></Annotation>""",
+
+            """<Annotation Int="7"><Bool>true</Bool></Annotation>""",
+            // """<Annotation><Collection><Int>1</Int><Int>2</Int></Collection></Annotation>""",
         };
         foreach (var example in examples)
         {
-            var e = XElement.Parse(example, LoadOptions.SetLineInfo|LoadOptions.SetBaseUri);
+            var e = XElement.Parse(example, LoadOptions.SetLineInfo | LoadOptions.SetBaseUri);
 
-            if(AnnotationExpression.TryFromXElement(e, out var a)) { 
-                Console.WriteLine(a);
-            } else
+            if (Annotation.TryFromXElement(e, out var a))
             {
-                Console.WriteLine("failed to parse {0}", e.ToString(SaveOptions.DisableFormatting));
+                Console.WriteLine("{0}:\n\t{1}", e.ToString(SaveOptions.DisableFormatting), a);
+            }
+            else
+            {
+                Console.WriteLine("{0}:\n\tfailed to parse.", e.ToString(SaveOptions.DisableFormatting));
             }
             Console.WriteLine();
         }

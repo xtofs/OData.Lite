@@ -6,6 +6,11 @@ public interface IFromXElement<TSelf> where TSelf : IFromXElement<TSelf>
     static abstract bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out TSelf value);
 }
 
+public interface IFromXAttribute<TSelf> where TSelf : IFromXAttribute<TSelf>
+{
+    static abstract bool TryFromXAttribute(XAttribute attribute, [MaybeNullWhen(false)] out TSelf value);
+}
+
 
 public static class IFromXElementExtensions
 {
