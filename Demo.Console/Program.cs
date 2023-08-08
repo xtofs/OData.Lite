@@ -6,13 +6,41 @@ internal class Program
 
     private static void Main()
     {
+        //         var x = XDocument.Load("""
+        // <Record>
+        //     <Annotation Term="Core.Description" String="Annotation on record" />
+        //     <PropertyValue Property="GivenName" Path="FirstName">
+        //       <Annotation Term="Core.Description"
+        //                   String="Annotation on record member" />
+        //     </PropertyValue>
+        //     <PropertyValue Property="Surname" Path="LastName" />
+        //     <PropertyValue Property="DirectSupervisor" Path="Manager" />
+        //     <PropertyValue Property="CostCenter">
+        //       <UrlRef>
+        //         <Apply Function="odata.fillUriTemplate">
+        //           <String>http://host/anotherservice/CostCenters('{ccid}')</String>
+        //           <LabeledElement Name="ccid" Path="CostCenterID" />
+        //         </Apply>
+        //       </UrlRef>
+        //     </PropertyValue>
+        //   </Record>
+        //         """);
+
+        var x = XElement.Load("<Int>10</Int>"));
+        // var x = XElement.Load("<Any Int=10/>"));
+
+        Expression.TryFromXElement(x, out var e);
+        System.Console.WriteLine(e);
+
+
+
         // // Log.AddConsole();
 
-        var cliArgs = Environment.GetCommandLineArgs();
-        var filename = cliArgs.Length > 1 ? cliArgs[1] : "example89.csdl.xml";
-        using var file = File.OpenText(filename);
+        // var cliArgs = Environment.GetCommandLineArgs();
+        // var filename = cliArgs.Length > 1 ? cliArgs[1] : "example89.csdl.xml";
+        // using var file = File.OpenText(filename);
 
-        if (Model.TryLoad(file, out var model))
+        // if (Model.TryLoad(file, out var model))
         {
             // Console.WriteLine(model); ;
             // Console.WriteLine("\n==========================================================\n");
