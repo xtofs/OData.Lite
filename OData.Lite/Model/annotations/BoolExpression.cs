@@ -1,4 +1,4 @@
-﻿namespace OData.Lite;
+﻿    namespace OData.Lite;
 
 public sealed record class BoolExpression(bool Value) :
     AnnotationExpression(), IFromXElement<BoolExpression>, IFromXAttribute<BoolExpression>, ILineInfo

@@ -6,10 +6,9 @@ public sealed record class NullExpression() :
 
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out NullExpression value)
     {
-        var e = element.Element("Null");
-        if (e != null)
+        if (element != null && element.Name.LocalName == "Null")
         {
-            value = new NullExpression() { Pos = e.LineInfo() };
+            value = new NullExpression() { Pos = element.LineInfo() };
             return true;
         }
         value = default;

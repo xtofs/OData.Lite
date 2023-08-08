@@ -7,15 +7,15 @@ internal class Program
     private static void Main()
     {
         var examples = new[]{
-            """<Annotation Int="7"/>""",
-            """<Annotation Bool="false"/>""",
-            """<Annotation><Bool>true</Bool></Annotation>""",
+            """<Annotation Term="Foo" Int="7"/>""",
+            """<Annotation Term="Foo" Bool="false"/>""",
+            """<Annotation Term="Foo"><Bool>true</Bool></Annotation>""",
 
-            """<Annotation><Int>7</Int></Annotation>""",
-            """<Annotation><Bool>true</Bool></Annotation>""",
-            """<Annotation><Null/></Annotation>""",
+            """<Annotation Term="Foo"><Int>7</Int></Annotation>""",
+            """<Annotation Term="Foo"><Bool>true</Bool></Annotation>""",
+            """<Annotation Term="Foo"><Null/></Annotation>""",
 
-            """<Annotation Int="7"><Bool>true</Bool></Annotation>""",
+            """<Annotation Term="Foo" Int="7"><Bool>true</Bool></Annotation>""",
             // """<Annotation><Collection><Int>1</Int><Int>2</Int></Collection></Annotation>""",
         };
         foreach (var example in examples)
