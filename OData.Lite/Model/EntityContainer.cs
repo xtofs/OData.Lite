@@ -10,7 +10,7 @@ public record class EntityContainer(string Name, ContainerElementCollection Elem
 
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out EntityContainer value)
     {
-        if (element.Name != EDM + "EntityContainer")
+        if (element == null || element.Name != EDM + "EntityContainer")
         {
             value = null; return false;
         }

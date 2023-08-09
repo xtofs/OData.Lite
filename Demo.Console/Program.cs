@@ -9,26 +9,27 @@ internal class Program
         OData.Lite.Logging.InitConsole();
 
         var cliArgs = Environment.GetCommandLineArgs();
-        var filename = cliArgs.Length > 1 ? cliArgs[1] : "example89.csdl.xml";
+        var filename = cliArgs.Length > 1 ? cliArgs[1] : "example90.csdl.xml";
         using var file = File.OpenText(filename);
 
         if (Model.TryLoad(file, out var model))
         {
-            // Console.WriteLine(model); ;
-            // Console.WriteLine("\n==========================================================\n");
+
+            Console.WriteLine(model); ;
+            Console.WriteLine("\n==========================================================\n");
 
             // CsdlWriter.Write("output.csdl.xml", model);
 
-            if (model.Schemas.TryFind("ODataDemo", out var schema))
-            {
-                var urlSpace = UrlSpace.From(model, schema, 3);
-                urlSpace.Display(Console.Out);
+            //if (model.Schemas.TryFind("ODataDemo", out var schema))
+            //{
+            //    var urlSpace = UrlSpace.From(model, schema, 3);
+            //    urlSpace.Display(Console.Out);
 
-                foreach (var path in urlSpace.Paths())
-                {
-                    Console.WriteLine(string.Join("/", from seg in path select seg.Name));
-                }
-            }
+            //    foreach (var path in urlSpace.Paths())
+            //    {
+            //        Console.WriteLine(string.Join("/", from seg in path select seg.Name));
+            //    }
+            //}
 
             // Console.WriteLine("\n==========================================================\n");
             // if (model.DataServices.Schemas.TryFind("self", out var schema) &&

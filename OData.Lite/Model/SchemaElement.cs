@@ -13,11 +13,16 @@ public abstract record class SchemaElement(string Name) : IFromXElement<SchemaEl
             case "EntityType":
                 res = EntityType.TryFromXElement(element, out var entityType);
                 value = entityType;
-                return res; ;
+                return res;
             case "ComplexType":
                 res = ComplexType.TryFromXElement(element, out var complexType);
                 value = complexType;
-                return res; ;
+                return res;
+            case "Term":
+                res = Term.TryFromXElement(element, out var term);
+                value = term;
+                return res;
+
             default:
                 value = null;
                 return false;

@@ -22,8 +22,13 @@ public record class Schema(string Namespace, string Alias, SchemaElementCollecti
         var schemaElements = SchemaElementCollection.FromXElements(element.Elements());
         // TODO: check for error: missing EntityContainer
         EntityContainer.TryFromXElement(element.Element(EDM + "EntityContainer")!, out var container);
+        
         value = new Schema(@namespace, alias, schemaElements, container!) { Pos = pos };
         return true;
+        
+
+        //value = default;
+        //return false;
     }
 
 }

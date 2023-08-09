@@ -1,10 +1,8 @@
-using System.Xml.Linq;
-
 namespace OData.Lite;
 
-record class EnumType(string Name, EnumMemberCollection Members) : SchemaElement(Name), IFromXElement<EnumType>, ILineInfo
+public record class EnumType(string Name, EnumMemberCollection Members) : SchemaElement(Name), IFromXElement<EnumType>, ILineInfo
 {
-    internal required (int LineNumber, int LinePosition) Pos { get; init; }
+    public required (int LineNumber, int LinePosition) Pos { get; init; }
 
     (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 
@@ -20,7 +18,7 @@ record class EnumType(string Name, EnumMemberCollection Members) : SchemaElement
     }
 }
 
-class EnumMemberCollection : KeyedCollection<string, EnumMember>
+public class EnumMemberCollection : KeyedCollection<string, EnumMember>
 {
     public EnumMemberCollection()
     { }
@@ -38,7 +36,7 @@ class EnumMemberCollection : KeyedCollection<string, EnumMember>
     }
 }
 
-record class EnumMember(string Name) : IFromXElement<EnumMember>, ILineInfo
+public record class EnumMember(string Name) : IFromXElement<EnumMember>, ILineInfo
 {
     public static bool TryFromXElement(XElement element, [MaybeNullWhen(false)] out EnumMember value)
     {
@@ -48,7 +46,7 @@ record class EnumMember(string Name) : IFromXElement<EnumMember>, ILineInfo
         return true;
     }
 
-    internal required (int LineNumber, int LinePosition) Pos { get; init; }
+    public required (int LineNumber, int LinePosition) Pos { get; init; }
 
     (int LineNumber, int LinePosition) ILineInfo.LineInfo => Pos;
 }
