@@ -3,74 +3,47 @@ using System.Collections.Immutable;
 
 internal class Program
 {
-
     private static void Main()
     {
-        var examples = new[]{
-            """<Annotation Term="Foo" Int="7"/>""",
-            """<Annotation Term="Foo" Bool="false"/>""",
-            """<Annotation Term="Foo"><Bool>true</Bool></Annotation>""",
 
-            """<Annotation Term="Foo"><Int>7</Int></Annotation>""",
-            """<Annotation Term="Foo"><Bool>true</Bool></Annotation>""",
-            """<Annotation Term="Foo"><Null/></Annotation>""",
+        OData.Lite.Logging.InitConsole();
 
-            """<Annotation Term="Foo" Int="7"><Bool>true</Bool></Annotation>""",
-            // """<Annotation><Collection><Int>1</Int><Int>2</Int></Collection></Annotation>""",
-        };
-        foreach (var example in examples)
+        var cliArgs = Environment.GetCommandLineArgs();
+        var filename = cliArgs.Length > 1 ? cliArgs[1] : "example89.csdl.xml";
+        using var file = File.OpenText(filename);
+
+        if (Model.TryLoad(file, out var model))
         {
-            var e = XElement.Parse(example, LoadOptions.SetLineInfo | LoadOptions.SetBaseUri);
+            // Console.WriteLine(model); ;
+            // Console.WriteLine("\n==========================================================\n");
 
-            if (Annotation.TryFromXElement(e, out var a))
+            // CsdlWriter.Write("output.csdl.xml", model);
+
+            if (model.Schemas.TryFind("ODataDemo", out var schema))
             {
-                Console.WriteLine("{0}:\n\t{1}", e.ToString(SaveOptions.DisableFormatting), a);
+                var urlSpace = UrlSpace.From(model, schema, 3);
+                urlSpace.Display(Console.Out);
+
+                foreach (var path in urlSpace.Paths())
+                {
+                    Console.WriteLine(string.Join("/", from seg in path select seg.Name));
+                }
             }
-            else
-            {
-                Console.WriteLine("{0}:\n\tfailed to parse.", e.ToString(SaveOptions.DisableFormatting));
-            }
-            Console.WriteLine();
+
+            // Console.WriteLine("\n==========================================================\n");
+            // if (model.DataServices.Schemas.TryFind("self", out var schema) &&
+            //     schema.Elements.TryFind<OData.Lite.ComplexType>("Shoe", out var complex) &&
+            //     complex.Properties.TryFind("color", out var prop) &&
+            //     model.TryResolve<EnumType>(prop.Type, out var color)
+            // )
+            // {
+            //     Console.WriteLine("found self/Show/color's type: {0}", color);
+            // }
+            // else
+            // {
+            //     Console.WriteLine("couldn't find self/Show/color's type");
+            // }
         }
-
-        // // // Log.AddConsole();
-
-        // var cliArgs = Environment.GetCommandLineArgs();
-        // var filename = cliArgs.Length > 1 ? cliArgs[1] : "example89.csdl.xml";
-        // using var file = File.OpenText(filename);
-
-        // if (Model.TryLoad(file, out var model))
-        // {
-        //     // Console.WriteLine(model); ;
-        //     // Console.WriteLine("\n==========================================================\n");
-
-        //     // CsdlWriter.Write("output.csdl.xml", model);
-
-        //     if (model.Schemas.TryFind("ODataDemo", out var schema))
-        //     {
-        //         var urlSpace = UrlSpace.From(model, schema, 3);
-        //         urlSpace.Display(Console.Out);
-
-        //         foreach (var path in urlSpace.Paths())
-        //         {
-        //             Console.WriteLine(string.Join("/", from seg in path select seg.Name));
-        //         }
-        //     }
-
-        //     // Console.WriteLine("\n==========================================================\n");
-        //     // if (model.DataServices.Schemas.TryFind("self", out var schema) &&
-        //     //     schema.Elements.TryFind<OData.Lite.ComplexType>("Shoe", out var complex) &&
-        //     //     complex.Properties.TryFind("color", out var prop) &&
-        //     //     model.TryResolve<EnumType>(prop.Type, out var color)
-        //     // )
-        //     // {
-        //     //     Console.WriteLine("found self/Show/color's type: {0}", color);
-        //     // }
-        //     // else
-        //     // {
-        //     //     Console.WriteLine("couldn't find self/Show/color's type");
-        //     // }
-        // }
     }
 
     static IEnumerable<string> MakeKeyNamesUnique(ImmutableList<string> path)
